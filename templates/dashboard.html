@@ -2,9 +2,78 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Dashboard</title>
+    <style>
+        .center {
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        h1, h2 {
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
-<h1>Dashboard</h1>
+    <table class="center">
+        <!-- Header -->
+        <tr>
+            <td colspan="2">
+                <h1>Dashboard</h1>
+                <nav>
+                    <a href="{% url 'profile' %}" style="margin-right: 10px;" class="btn">Profile</a>
+                    <a href="{% url 'notifications' %}" style="margin-right: 10px;" class="btn">Notifications</a>
+                    <a href="{% url 'logout' %}" style="margin-right: 10px;" class="btn">Log-out</a>
+                </nav>
+            </td>
+        </tr>
+        
+        <!-- Courses Section -->
+        <tr>
+            <td colspan="2">
+                <h2>Courses:</h2>
+                <table class="center">
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th>Instructor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for course in courses %}
+                        <tr>
+                            <td>{{ course.name }}</td>
+                            <td>{{ course.instructor }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+
+        <!-- Management Links -->
+        <tr>
+            <td colspan="2">
+                <div>
+                    <table style="text-align: center;">
+                        <tr>
+                            <td><a href="{% url 'course_assignment' %}" class="btn">Course Assignment</a></td>
+                            <td><a href="{% url 'ta_assignment' %}" class="btn">TA Assignment</a></td>
+                        </tr>
+                        <tr>
+                            <td><a href="{% url 'course_management' %}" class="btn">Course Management</a></td>
+                            <td><a href="{% url 'account_management' %}" class="btn">Account Management</a></td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>
