@@ -1,14 +1,42 @@
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from django.test import TestCase
+from django.test import TestCase, Client
 from TASchedulerApp.services import AccountService
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from argparse import ArgumentTypeError
 from courseservice import CourseService
 from TASchedulerApp.utils.Notification import notification
 
 # Create your tests here.
+
+class TestRedirectToDashboard(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.username = 'John Burgerton'
+        self.password = '123abc'
+
+    def test_loginDisplay(self):
+        # Simply test that the login actually displays
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+
+    @patch('django.contrib.auth.authenticate')
+    def test_login(self, mock_authenticate):
+        # Test that login redirects to dashboard
+        mock_user = Mock()
+        mock_authenticate.return_value = mock_user
+
+        response = self.client.post('/', {
+            'username': self.username,
+            'password': self.password
+        })
+
+        mock_authenticate.assert_called_once_with(
+            username=self.username,
+            password=self.password
+        )
+        self.assertEqual(response.status_code, 302)
 
 class TestCreateAccount(unittest.TestCase):
     def setUp(self):
