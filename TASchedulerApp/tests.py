@@ -38,6 +38,22 @@ class TestRedirectToDashboard(TestCase):
         )
         self.assertEqual(response.status_code, 302)
 
+    def test_bad_login_username(self):
+        # Test that an error message is shown for invalid username
+        response = self.client.post('/', {
+            'username': 'wrong_username',
+            'password': self.password
+        })
+        self.assertContains(response, "User does not exist")
+
+    def test_bad_login_password(self):
+        # Test that an error message is shown for incorrect password
+        response = self.client.post('/', {
+            'username': self.username,
+            'password': 'wrong_password'
+        })
+        self.assertContains(response, "Incorrect password")
+
 class TestCreateAccount(unittest.TestCase):
     def setUp(self):
         self.user_in_db = {
