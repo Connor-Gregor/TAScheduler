@@ -1,14 +1,58 @@
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from django.test import TestCase
+from django.test import TestCase, Client
 from TASchedulerApp.services import AccountService
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from argparse import ArgumentTypeError
 from courseservice import CourseService
 from TASchedulerApp.utils.Notification import notification
 
 # Create your tests here.
+
+class TestRedirectToDashboard(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.username = 'John Burgerton'
+        self.password = '123abc'
+
+    def test_loginDisplay(self):
+        # Simply test that the login actually displays
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+
+    @patch('django.contrib.auth.authenticate')
+    def test_login(self, mock_authenticate):
+        # Test that login redirects to dashboard
+        mock_user = Mock()
+        mock_authenticate.return_value = mock_user
+
+        response = self.client.post('/', {
+            'username': self.username,
+            'password': self.password
+        })
+
+        mock_authenticate.assert_called_once_with(
+            username=self.username,
+            password=self.password
+        )
+        self.assertEqual(response.status_code, 302)
+
+    def test_bad_login_username(self):
+        # Test that an error message is shown for invalid username
+        response = self.client.post('/', {
+            'username': 'wrong_username',
+            'password': self.password
+        })
+        self.assertContains(response, "User does not exist")
+
+    def test_bad_login_password(self):
+        # Test that an error message is shown for incorrect password
+        response = self.client.post('/', {
+            'username': self.username,
+            'password': 'wrong_password'
+        })
+        self.assertContains(response, "Incorrect password")
 
 class TestCreateAccount(unittest.TestCase):
     def setUp(self):
