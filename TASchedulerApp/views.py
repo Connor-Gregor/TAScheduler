@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.models import Group
 from .forms import RegistrationForm
-from .models import MyUser
 from django.utils.decorators import method_decorator
 from .decorators import role_required
 from django.contrib.auth import authenticate, login
@@ -44,12 +43,6 @@ class Register(View):
             user.role = form.cleaned_data['role']
             user.is_approved = True  # Or set to False if you require approval
             user.save()
-            # Assign the user to a group based on their role
-            if user.role == 'Instructor':
-                group, _ = Group.objects.get_or_create(name='Instructor')
-            else:
-                group, _ = Group.objects.get_or_create(name='TA')
-            user.groups.add(group)
             return redirect('login')
         else:
             return render(request, 'common/register.html', {'form': form})
