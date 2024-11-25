@@ -1,7 +1,7 @@
 # Create your models here.
 from django.db import models
 
-class User(models.Model):
+class MyUser(models.Model):
     ROLE_CHOICES = [
         ('Administrator', 'Administrator'),
         ('Instructor', 'Instructor'),
@@ -9,9 +9,11 @@ class User(models.Model):
     ]
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='TA')
     email = models.EmailField(unique=True)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     password = models.CharField(max_length=50)
-    contactInfo = models.CharField(max_length=50)
+    contactInfo = models.CharField(max_length=50, default='')
+    is_anonymous = models.BooleanField(default=False)
+    is_authenticated = models.BooleanField(default=False)
 
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'name'
@@ -24,11 +26,11 @@ class User(models.Model):
 
 class Course(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    id = models.IntegerField(unique=True)
+    id = models.IntegerField(unique=True, primary_key=True)
     semester = models.CharField(max_length=50)
     instructor = models.CharField(max_length=50)
-    ta = models.ManyToManyField(User)
-    students = models.ManyToManyField(User)
+    ta = models.ManyToManyField(MyUser)
+    #students = models.ManyToManyField(MyUser)
     lab_sections = models.CharField(max_length=50)
 
     def __str__(self):
@@ -36,12 +38,12 @@ class Course(models.Model):
 
 class LabSection(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    id = models.IntegerField(unique=True)
+    id = models.IntegerField(unique=True, primary_key=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     semester = models.CharField(max_length=50)
     instructor = models.CharField(max_length=50)
-    ta = models.ManyToManyField(User)
-    students = models.ManyToManyField(User)
+    ta = models.ManyToManyField(MyUser)
+    #students = models.ManyToManyField(MyUser)
 
     def __str__(self):
         return " ".join([self.name, self.id, self.semester])
