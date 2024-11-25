@@ -13,7 +13,7 @@ class Login(View):
         return render(request, "common/login.html")
 
     def post(self, request):
-        name = request.POST['name']
+        name = request.POST['username']
         password = request.POST['password']
 
         # Check if username exists
