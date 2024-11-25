@@ -1,10 +1,16 @@
 from django.shortcuts import render, redirect
 from django.views import View
-
+from django.contrib.auth.models import Group
+from .forms import RegistrationForm
+from .models import MyUser
+from django.utils.decorators import method_decorator
+from .decorators import role_required
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 class Login(View):
     def get(self,request):
-        return render(request,"login.html")
+        return render(request, "common/login.html")
 
     def post(self, request):
         name = request.POST['name']
@@ -12,18 +18,61 @@ class Login(View):
 
         # Check if username exists
         #Change MyUser to name of class from models.py + include from .models import MyUser at the top
-        try:
-            user = MyUser.objects.get(name=name)
-            if user.password == password:  # Check if the password matches
-                request.session["name"] = user.name
-                return redirect("/dashboard/")  # Redirect to /dashboard/ on success
-            else:
-                # Incorrect password
-                return render(request, "login.html", {"message": "Incorrect password"})
-        except MyUser.DoesNotExist:
-            # Username does not exist
-            return render(request, "login.html", {"message": "User does not exist"})
-
+        user = authenticate(request, username=name, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            return render(request, "common/login.html", {"message": "Invalid username or password"})
 class Dashboard(View):
     def get(self,request):
-        return render(request,"dashboard.html")
+        user = request.user
+        if user.role == 'Administrator':
+            return render(request, 'admin/admin_dashboard.html', {'user': user})
+        elif user.role == 'Instructor':
+            return render(request, 'instructor/instructor_dashboard.html', {'user': user})
+        elif user.role == 'TA':
+            return render(request, 'ta/ta_dashboard.html', {'user': user})
+        else:
+            return redirect('login')
+class Register(View):
+    def get(self, request):
+        form = RegistrationForm()
+        return render(request, 'common/register.html', {'form': form})
+
+    def post(self, request):
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.role = form.cleaned_data['role']
+            user.is_approved = True  # Or set to False if you require approval
+            user.save()
+            # Assign the user to a group based on their role
+            if user.role == 'Instructor':
+                group, _ = Group.objects.get_or_create(name='Instructor')
+            else:
+                group, _ = Group.objects.get_or_create(name='TA')
+            user.groups.add(group)
+            return redirect('login')
+        else:
+            return render(request, 'common/register.html', {'form': form})
+class CreateCourseView(LoginRequiredMixin, View):
+    @method_decorator(role_required(allowed_roles=['Administrator']))
+    def get(self, request):
+        # Implementation for GET request
+        pass
+
+    @method_decorator(role_required(allowed_roles=['Administrator']))
+    def post(self, request):
+        # Implementation for POST request
+        pass
+
+class ProfileView(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        return render(request, 'common/profile.html', {'user': user})
+
+    def post(self, request):
+        # Handle form submissions to update profile information
+        # You can process form data here and save changes
+        pass
