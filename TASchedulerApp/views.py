@@ -24,17 +24,14 @@ class Login(View):
             return redirect('dashboard')
         else:
             return render(request, "common/login.html", {"message": "Invalid username or password"})
-class Dashboard(View):
-    def get(self,request):
+class Dashboard(LoginRequiredMixin, View):
+    def get(self, request):
         user = request.user
-        if user.role == 'Administrator':
-            return render(request, 'admin/admin_dashboard.html', {'user': user})
-        elif user.role == 'Instructor':
-            return render(request, 'instructor/instructor_dashboard.html', {'user': user})
-        elif user.role == 'TA':
-            return render(request, 'ta/ta_dashboard.html', {'user': user})
-        else:
-            return redirect('login')
+        context = {
+            'user': user,
+            'user_role': user.role  # Pass the user's role to the template
+        }
+        return render(request, 'dashboard.html', context)
 class Register(View):
     def get(self, request):
         form = RegistrationForm()
@@ -60,7 +57,7 @@ class CreateCourseView(LoginRequiredMixin, View):
     @method_decorator(role_required(allowed_roles=['Administrator']))
     def get(self, request):
         # Implementation for GET request
-        pass
+        return render(request, 'admin/create_course.html')
 
     @method_decorator(role_required(allowed_roles=['Administrator']))
     def post(self, request):
@@ -74,5 +71,4 @@ class ProfileView(LoginRequiredMixin, View):
 
     def post(self, request):
         # Handle form submissions to update profile information
-        # You can process form data here and save changes
         pass
