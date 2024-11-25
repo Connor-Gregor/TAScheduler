@@ -6,6 +6,10 @@ from django.utils.decorators import method_decorator
 from .decorators import role_required
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+from .models import MyUser
+
+
 # Create your views here.
 class Login(View):
     def get(self,request):
@@ -15,13 +19,20 @@ class Login(View):
         name = request.POST['username']
         password = request.POST['password']
 
-        # Check if username exists
-        #Change MyUser to name of class from models.py + include from .models import MyUser at the top
-        user = authenticate(request, username=name, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('dashboard')
-        else:
+        try:
+            # Retrieve user by 'name' field (custom user model field)
+            user = MyUser.objects.get(name=name)
+
+            # Check if the password matches
+            if user.check_password(password):
+                login(request, user)  # Log the user in
+                return redirect('dashboard')
+            else:
+                # Password incorrect
+                return render(request, "common/login.html", {"message": "Invalid username or password1"})
+
+        except MyUser.DoesNotExist:
+            # User not found
             return render(request, "common/login.html", {"message": "Invalid username or password"})
 class Dashboard(LoginRequiredMixin, View):
     def get(self, request):
@@ -65,3 +76,8 @@ class ProfileView(LoginRequiredMixin, View):
     def post(self, request):
         # Handle form submissions to update profile information
         pass
+
+class NotificationView(View):
+    def get(self, request):
+        # Logic for fetching and displaying notifications
+        return render(request, 'common/notifications.html')

@@ -33,6 +33,7 @@ urlpatterns = [
     # Common URLs (accessible by all roles)
     path('profile/', views.ProfileView.as_view(), name='profile'),
     #path('notifications/', views.NotificationsView.as_view(), name='notifications'),
+    path('notifications/', views.NotificationView.as_view(), name='notifications'),
 
     # Administrator URLs
     path('admin/create_course/', views.CreateCourseView.as_view(), name='create_course'),

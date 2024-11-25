@@ -5,6 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from .models import MyUser
 
+
 class RegistrationForm(forms.ModelForm):
     ROLE_CHOICES = [
         ('Administrator', 'Administrator'),
@@ -33,9 +34,14 @@ class RegistrationForm(forms.ModelForm):
         return password2
 
     def save(self, commit=True):
+        # Create the user but don't save yet
         user = super().save(commit=False)
         user.username = self.cleaned_data['name']
-        user.password = self.cleaned_data['password1']
+
+        # Hash the password before saving
+        user.set_password(self.cleaned_data['password1'])
+
+        # If commit is True, save the user instance
         if commit:
             user.save()
         return user
