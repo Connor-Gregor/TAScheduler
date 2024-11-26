@@ -36,7 +36,7 @@ urlpatterns = [
     path('notifications/', views.NotificationView.as_view(), name='notifications'),
 
     # Manage Accounts
-    path('manage-users/', views.manage_users, name='manage_users'),
+    path('account-management/', views.manage_users, name='account_management'),
     path('edit-user/<int:user_id>/', views.edit_user, name='edit_user'),
     path('delete-user/<int:user_id>/', views.delete_user, name='delete_user'),
 

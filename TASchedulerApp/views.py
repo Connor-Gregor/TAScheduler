@@ -86,7 +86,7 @@ class NotificationView(View):
 @login_required
 def manage_users(request):
     users = MyUser.objects.filter(role__in=['Instructor', 'TA'])
-    return render(request, 'manage_users.html', {'users': users})
+    return render(request, 'admin/manage_users.html', {'users': users})
 
 @login_required
 def edit_user(request, user_id):
@@ -98,7 +98,7 @@ def edit_user(request, user_id):
             return redirect('manage_users')
     else:
         form = EditUserForm(instance=user)
-    return render(request, 'edit_user.html', {'form': form, 'user': user})
+    return render(request, 'admin/edit_user.html', {'form': form, 'user': user})
 
 @login_required
 def delete_user(request, user_id):
@@ -106,4 +106,4 @@ def delete_user(request, user_id):
     if request.method == 'POST':
         user.delete()
         return redirect('manage_users')
-    return render(request, 'confirm_delete.html', {'user': user})
+    return render(request, 'admin/confirm_delete.html', {'user': user})
