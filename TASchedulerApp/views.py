@@ -97,14 +97,15 @@ def edit_user(request, user_id):
         new_name = request.POST.get('newName', None)
         new_password = request.POST.get('newPassword', None)
         new_contact_info = request.POST.get('newContactInfo', None)
+        new_role = request.POST.get('newRole', None)
 
-        if not (new_name or new_password or new_contact_info):
+        if not (new_name or new_password or new_contact_info or new_role):
             return render(
                 request,
                 'admin/edit_user.html',
                 {
                     'user': user,
-                    'error': "At least one field (newName, newPassword, newContactInfo) must be provided.",
+                    'error': "At least one field (newName, newPassword, newContactInfo, New Role) must be provided.",
                 },
             )
 
@@ -114,6 +115,8 @@ def edit_user(request, user_id):
             user.set_password(new_password)
         if new_contact_info:
             user.email = new_contact_info
+        if new_role:
+            user.role = new_role
 
         user.save()
 

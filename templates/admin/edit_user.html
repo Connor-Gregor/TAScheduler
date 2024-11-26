@@ -13,18 +13,30 @@
 
     <form method="post">
         {% csrf_token %}
+        
+        <!-- username -->
         <label for="newName">New Name:</label>
         <input type="text" name="newName" id="newName" placeholder="{{ user.name }}">
         <br>
-
+        
+        <!-- password -->
         <label for="newPassword">New Password:</label>
         <input type="password" name="newPassword" id="newPassword">
         <br>
-
+        
+        <!-- email -->
         <label for="newContactInfo">New Contact Info:</label>
         <input type="email" name="newContactInfo" id="newContactInfo" placeholder="{{ user.contact_info }}" value="{{ user.email }}">
         <br>
-
+        
+        <!-- Role -->
+        <label for="newRole">Role:</label>
+        <select name="newRole" id="newRole">
+            <option value="Instructor" {% if user.role == "Instructor" %}selected{% endif %}>Instructor</option>
+            <option value="TA" {% if user.role == "TA" %}selected{% endif %}>TA</option>
+         </select>
+        <br>
+    
         <button type="submit">Save Changes</button>
         <a href="{% url 'account_management' %}">Cancel</a>
     </form>
