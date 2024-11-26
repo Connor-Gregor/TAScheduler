@@ -87,3 +87,47 @@ class NotificationView(View):
 def manage_users(request):
     users = MyUser.objects.filter(role__in=['Instructor', 'TA'])
     return render(request, 'admin/manage_users.html', {'users': users})
+
+@login_required
+def edit_user(request, user_id):
+
+    user = get_object_or_404(MyUser, id=user_id)
+
+    if request.method == 'POST':
+        new_name = request.POST.get('newName', None)
+        new_password = request.POST.get('newPassword', None)
+        new_contact_info = request.POST.get('newContactInfo', None)
+        new_role = request.POST.get('newRole', None)
+
+        if not (new_name or new_password or new_contact_info or new_role):
+            return render(
+                request,
+                'admin/edit_user.html',
+                {
+                    'user': user,
+                    'error': "At least one field (newName, newPassword, newContactInfo, New Role) must be provided.",
+                },
+            )
+
+        if new_name:
+            user.name = new_name
+        if new_password:
+            user.set_password(new_password)
+        if new_contact_info:
+            user.email = new_contact_info
+        if new_role:
+            user.role = new_role
+
+        user.save()
+
+        return redirect('account_management')
+
+    return render(request, 'admin/edit_user.html', {'user': user})
+
+@login_required
+def delete_user(request, user_id):
+    user = get_object_or_404(MyUser, id=user_id)
+    if request.method == 'POST':
+        user.delete()
+        return redirect('account_management')
+    return render(request, 'admin/confirm_delete.html', {'user': user})
