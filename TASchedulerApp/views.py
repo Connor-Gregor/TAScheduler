@@ -1,11 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.contrib.auth.models import Group
-from .forms import RegistrationForm
+from .forms import RegistrationForm, EditUserForm
 from django.utils.decorators import method_decorator
 from .decorators import role_required
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 
 from .models import MyUser
 
@@ -81,3 +82,28 @@ class NotificationView(View):
     def get(self, request):
         # Logic for fetching and displaying notifications
         return render(request, 'common/notifications.html')
+
+@login_required
+def manage_users(request):
+    users = MyUser.objects.filter(role__in=['Instructor', 'TA'])
+    return render(request, 'manage_users.html', {'users': users})
+
+@login_required
+def edit_user(request, user_id):
+    user = get_object_or_404(MyUser, id=user_id)
+    if request.method == 'POST':
+        form = EditUserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('manage_users')
+    else:
+        form = EditUserForm(instance=user)
+    return render(request, 'edit_user.html', {'form': form, 'user': user})
+
+@login_required
+def delete_user(request, user_id):
+    user = get_object_or_404(MyUser, id=user_id)
+    if request.method == 'POST':
+        user.delete()
+        return redirect('manage_users')
+    return render(request, 'confirm_delete.html', {'user': user})
