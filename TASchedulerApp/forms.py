@@ -45,3 +45,8 @@ class RegistrationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+class EditUserForm(forms.ModelForm):
+    class Meta:
+        model = MyUser
+        fields = ['username', 'email', 'first_name', 'last_name', 'role']
