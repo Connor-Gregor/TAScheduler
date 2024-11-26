@@ -22,7 +22,7 @@
         <br>
 
         <label for="newContactInfo">New Contact Info:</label>
-        <input type="text" name="newContactInfo" id="newContactInfo" placeholder="{{ user.contact_info }}">
+        <input type="email" name="newContactInfo" id="newContactInfo" placeholder="{{ user.contact_info }}" value="{{ user.email }}">
         <br>
 
         <button type="submit">Save Changes</button>

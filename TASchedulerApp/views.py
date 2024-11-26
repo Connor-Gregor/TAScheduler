@@ -90,43 +90,35 @@ def manage_users(request):
 
 @login_required
 def edit_user(request, user_id):
-    # Fetch the user account by ID
+
     user = get_object_or_404(MyUser, id=user_id)
 
-    # Handle the POST request
     if request.method == 'POST':
-        # Extract parameters from the form submission
         new_name = request.POST.get('newName', None)
         new_password = request.POST.get('newPassword', None)
         new_contact_info = request.POST.get('newContactInfo', None)
 
-        # Preconditions
         if not (new_name or new_password or new_contact_info):
             return render(
                 request,
                 'admin/edit_user.html',
                 {
-                    'form': None,
                     'user': user,
                     'error': "At least one field (newName, newPassword, newContactInfo) must be provided.",
                 },
             )
 
-        # Update the user account fields if new values are provided
         if new_name:
             user.name = new_name
         if new_password:
-            user.set_password(new_password)  # Hash the password
+            user.set_password(new_password)
         if new_contact_info:
-            user.contact_info = new_contact_info
+            user.email = new_contact_info
 
-        # Save the updated user
         user.save()
 
-        # Redirect to account management after successful update
         return redirect('account_management')
 
-    # Handle the GET request (display form with current user details)
     return render(request, 'admin/edit_user.html', {'user': user})
 
 
