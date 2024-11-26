@@ -35,6 +35,11 @@ urlpatterns = [
     #path('notifications/', views.NotificationsView.as_view(), name='notifications'),
     path('notifications/', views.NotificationView.as_view(), name='notifications'),
 
+    # Manage Accounts
+    path('manage-users/', views.manage_users, name='manage_users'),
+    path('edit-user/<int:user_id>/', views.edit_user, name='edit_user'),
+    path('delete-user/<int:user_id>/', views.delete_user, name='delete_user'),
+
     # Administrator URLs
     path('admin/create_course/', views.CreateCourseView.as_view(), name='create_course'),
     #path('admin/create_account/', views.CreateAccountView.as_view(), name='create_account'),
