@@ -1,12 +1,15 @@
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.test import TestCase, Client
+from TASchedulerApp.forms import CourseForm
+from TASchedulerApp.models import MyCourse
 from TASchedulerApp.services import AccountService
 import unittest
 from unittest.mock import Mock, patch
 from argparse import ArgumentTypeError
 from courseservice import CourseService
 from TASchedulerApp.utils.Notification import notification
+from django.contrib.auth import get_user_model
 
 # Create your tests here.
 
@@ -192,3 +195,50 @@ class TestNotification(unittest.TestCase):
 
     assert result is True
     assert notification().getNotificationQueue(recipient_id) == [message]
+    
+    
+class MyCourseModelTest(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="instructor", password="password", role="Instructor"
+        )
+    
+    def test_course_creation(self):
+        course = MyCourse.objects.create(
+            name="Test Course",
+            instructor=self.user,
+            room="101",
+            time="10:00 AM - 12:00 PM"
+        )
+        self.assertEqual(course.name, "Test Course")
+        self.assertEqual(course.instructor, self.user)
+        self.assertEqual(course.room, "101")
+        self.assertEqual(course.time, "10:00 AM - 12:00 PM")
+        self.assertTrue(course.id) 
+        
+class MyCourseFormTest(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="instructor", password="password", role="Instructor"
+        )
+    
+    def test_valid_course_form(self):
+        form_data = {
+            "name": "Valid Course",
+            "instructor": self.user.id,
+            "room": "202",
+            "time": "2:00 PM - 4:00 PM"
+        }
+        form = CourseForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+    def test_invalid_course_form_missing_fields(self):
+        form_data = {
+            "name": "",
+            "instructor": self.user.id,
+            "room": "",
+            "time": ""
+        }
+        form = CourseForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(len(form.errors), 3)

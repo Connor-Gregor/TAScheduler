@@ -1,14 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from django.contrib.auth.models import Group
-from .forms import RegistrationForm
+from .forms import CourseForm, RegistrationForm
 from django.utils.decorators import method_decorator
 from .decorators import role_required
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
-from .models import MyUser
+from .models import MyCourse, MyUser
 
 
 # Create your views here.
@@ -62,12 +61,28 @@ class CreateCourseView(LoginRequiredMixin, View):
     @method_decorator(role_required(allowed_roles=['Administrator']))
     def get(self, request):
         # Implementation for GET request
-        return render(request, 'admin/create_course.html')
+        return render(request, 'admin/course_management.html')
 
     @method_decorator(role_required(allowed_roles=['Administrator']))
     def post(self, request):
         # Implementation for POST request
         pass
+
+class CreateCourse(LoginRequiredMixin, View):
+    @method_decorator(role_required(allowed_roles=['Administrator']))
+    def get(self, request):
+        form = CourseForm()
+        return render(request, 'admin/create_course.html', {'form': form})
+    
+    def post(self, request):
+        form = CourseForm(request.POST)
+        if form.is_valid():
+            course = form.save(commit=False)
+            course.instructor = request.user
+            course.save()
+            return redirect('course_management')
+        else:
+            return render(request, 'admin/create_course.html', {'form': form})
 
 class ProfileView(LoginRequiredMixin, View):
     def get(self, request):
@@ -131,3 +146,39 @@ def delete_user(request, user_id):
         user.delete()
         return redirect('account_management')
     return render(request, 'admin/confirm_delete.html', {'user': user})
+
+@login_required
+def edit_course(request, course_id):
+
+    course = get_object_or_404(MyCourse, id=course_id)
+
+    if request.method == 'POST':
+        new_name = request.POST.get('newName', None)
+        new_instructor = request.POST.get('newInstructor', None)
+        new_room = request.POST.get('newRoom', None)
+        new_time = request.POST.get('newTime', None)
+
+        if not (new_name or new_instructor or new_room or new_time):
+            return render(
+                request,
+                'admin/edit_course.html',
+                {
+                    'course': course,
+                    'error': "At least one field (newName, newInstructor, newRoom, NewTime) must be provided.",
+                },
+            )
+
+        if new_name:
+            course.name = new_name
+        if new_instructor:
+            course.instructor = new_instructor
+        if new_room:
+            course.room = new_room
+        if new_time:
+            course.time = new_time
+
+        course.save()
+
+        return redirect('course_management')
+
+    return render(request, 'admin/edit_course.html', {'course': course})
