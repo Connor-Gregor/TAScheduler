@@ -320,3 +320,58 @@ class EditUserViewTest(TestCase):
         response = self.client.get(reverse('edit_user', args=[self.test_user.id]))
         self.assertEqual(response.status_code, 302)  # Redirect to login
         self.assertIn('/accounts/login/', response.url)
+
+class DeleteUserViewTest(TestCase):
+    def setUp(self):
+        # Create a test admin user
+        self.admin_user = MyUser.objects.create_user(
+            username="admin",
+            email="admin@example.com",
+            password="adminpass",
+            role="admin"
+        )
+
+        # Create a regular user to delete
+        self.test_user = MyUser.objects.create_user(
+            username="testuser",
+            email="testuser@example.com",
+            password="testpass",
+            role="user"
+        )
+
+        self.client = Client()
+
+        self.client.login(username="admin", password="adminpass")
+
+    def test_get_confirm_delete_page(self):
+        url = reverse('delete_user', args=[self.test_user.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'admin/confirm_delete.html')
+        self.assertEqual(response.context['user'], self.test_user)
+
+    def test_delete_user_post_request(self):
+        url = reverse('delete_user', args=[self.test_user.id])
+        response = self.client.post(url)
+        # Check that the user is deleted
+        with self.assertRaises(MyUser.DoesNotExist):
+            MyUser.objects.get(id=self.test_user.id)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('account_management'))
+
+    def test_delete_non_existent_user(self):
+        url = reverse('delete_user', args=[999])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_user_unauthenticated_access(self):
+        self.client.logout()
+        url = reverse('delete_user', args=[self.test_user.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith(reverse('login')))
+
+    def test_get_non_existent_user_confirm_page(self):
+        url = reverse('delete_user', args=[999])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
