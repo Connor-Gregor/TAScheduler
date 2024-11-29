@@ -279,14 +279,14 @@ class EditUserViewTest(TestCase):
                 'newName': 'Updated Name',
                 'newPassword': 'newpassword123',
                 'newContactInfo': 'newemail@example.com',
-                'newRole': 'editor'
+                'newRole': 'TA'
             }
         )
         self.test_user.refresh_from_db()
         self.assertEqual(self.test_user.name, 'Updated Name')
         self.assertTrue(self.test_user.check_password('newpassword123'))
         self.assertEqual(self.test_user.email, 'newemail@example.com')
-        self.assertEqual(self.test_user.role, 'editor')
+        self.assertEqual(self.test_user.role, 'TA')
         self.assertRedirects(response, reverse('account_management'))
 
     def test_edit_user_no_data(self):
