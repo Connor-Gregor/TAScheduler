@@ -2,81 +2,190 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <style>
-        .center {
-          margin-left: auto;
-          margin-right: auto;
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f7fa; 
+            color: #333; 
+        }
+
+        .header {
+            background-color: #34495e; 
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 4px solid #16a085;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        nav {
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: #ecf0f1; 
+            text-decoration: none;
+            padding: 8px 15px;
+            background-color: #16a085; 
+            border-radius: 5px;
+            margin-right: 15px;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #1abc9c;
+            transform: translateY(-2px); 
+        }
+
+        .content {
+            padding: 30px;
+            max-width: 1000px;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #34495e;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
         }
 
         th, td {
-            padding: 10px;
+            padding: 15px 20px;
             text-align: center;
             border: 1px solid #ddd;
+            font-size: 1.1em;
         }
 
-        h1, h2 {
-            margin: 0;
+        th {
+            background-color: #16a085;
+            color: #fff;
+        }
+
+        td {
+            background-color: #f9f9f9;
+        }
+
+        td:nth-child(even) {
+            background-color: #eef2f7;
+        }
+
+        td a {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        td a:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px); /* Slight hover effect */
+        }
+
+        .admin-links table {
+            width: auto;
+            margin: 0 auto;
+        }
+
+        .admin-links td {
+            padding: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #34495e;
+            color: white;
+            margin-top: 20px;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .footer a {
+            color: #1abc9c;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .footer a:hover {
+            color: #16a085;
         }
     </style>
 </head>
 <body>
-    <table class="center">
-        <!-- Header -->
-        <tr>
-            <td colspan="2">
-                <h1>Dashboard</h1>
-                <nav>
-                    <a href="{% url 'profile' %}" style="margin-right: 10px;" class="btn">Profile</a>
-                    <a href="{% url 'notifications' %}" style="margin-right: 10px;" class="btn">Notifications</a>
-                    <a href="{% url 'login' %}" style="margin-right: 10px;" class="btn">Log-out</a>
-                </nav>
-            </td>
-        </tr>
+    <!-- Header -->
+    <header class="header">
+        <h1>Dashboard</h1>
+        <nav>
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="{% url 'notifications' %}">Notifications</a>
+            <a href="{% url 'login' %}">Log-out</a>
+        </nav>
+    </header>
 
+    <!-- Main Content -->
+    <div class="content">
         <!-- Courses Section -->
-        <tr>
-            <td colspan="2">
-                <h2>Courses:</h2>
-                <table class="center">
-                    <thead>
-                        <tr>
-                            <th>Course</th>
-                            <th>Instructor</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for course in courses %}
-                        <tr>
-                            <td>{{ course.name }}</td>
-                            <td>{{ course.instructor }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </td>
-        </tr>
+        <h2>Courses</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Instructor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses %}
+                <tr>
+                    <td>{{ course.name }}</td>
+                    <td>{{ course.instructor }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-        <!-- Management Links -->
-        <!-- remove {#  #} from the four links once their views have been implemented -->
+        <!-- Management Links (Administrator Only) -->
         {% if user.role == 'Administrator' %}
-        <tr>
-            <td colspan="2">
-                <div>
-                    <table style="text-align: center;">
-                        <tr>
-                            <td><a href="{# {% url 'course_assignment' %} #}" class="btn">Course Assignment</a></td>
-                            <td><a href="{# {% url 'ta_assignment' %} #}" class="btn">TA Assignment</a></td>
-                        </tr>
-                        <tr>
-                            <td><a href="{% url 'course_management' %}" class="btn">Course Management</a></td>
-                            <td><a href="{% url 'account_management' %}" class="btn">Account Management</a></td>
-                        </tr>
-                    </table>
-                </div>
-            </td>
-        </tr>
-    {% endif %}
-    </table>
+        <h2>Administrative Tools</h2>
+        <div class="admin-links">
+            <table>
+                <tr>
+                    <td><a href="{# {% url 'course_assignment' %} #}">Course Assignment</a></td>
+                    <td><a href="{# {% url 'ta_assignment' %} #}">TA Assignment</a></td>
+                </tr>
+                <tr>
+                    <td><a href="{% url 'course_management' %}">Course Management</a></td>
+                    <td><a href="{% url 'account_management' %}">Account Management</a></td>
+                </tr>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        &copy; 2024 Your Organization. All rights reserved. 
+        <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+    </footer>
 </body>
 </html>
