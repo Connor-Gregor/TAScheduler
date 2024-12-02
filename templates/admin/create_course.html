@@ -2,9 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>TODO</title>
+    <title>Create Course</title>
+    <!-- Include any CSS files here if needed -->
 </head>
 <body>
+    <h1>Create Course</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            <p>
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <span style="color: red;">{{ field.errors|striptags }}</span>
+                {% endif %}
+            </p>
+        {% endfor %}
+        
+        <button type="submit">Save Course</button>
+        <a href="{% url 'course_management' %}">Cancel</a>
+    </form>
 
 </body>
 </html>

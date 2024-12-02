@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Courses</title>
+</head>
+<body>
+    <h1>Manage Courses</h1>
+
+    <!-- Back to Dashboard Button -->
+    <a href="{% url 'dashboard' %}" style="text-decoration: none;">
+        <button style="margin-bottom: 10px;">Back to Dashboard</button>
+    </a>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th>Instructor</th>
+                <th>Room Number</th>
+                <th>Class Time</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+            <tr>
+                <td>{{ course.name }}</td>
+                <td>{{ course.instructor }}</td>
+                <td>{{ course.room }}</td>
+                <td>{{ course.time }}</td>
+                <td>
+                    <a href="{% url 'edit_course' course.id %}">Edit</a>
+                    <a href="{% url 'delete_course' course.id %}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p>
+        <a href="{% url 'create_course' %}">Create Course</a>
+    </p>
+
+</body>
+</html>

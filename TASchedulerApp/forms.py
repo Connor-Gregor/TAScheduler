@@ -3,7 +3,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
-from .models import MyUser
+from .models import MyCourse, MyUser
 
 
 class RegistrationForm(forms.ModelForm):
@@ -45,3 +45,14 @@ class RegistrationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+class EditUserForm(forms.ModelForm):
+    class Meta:
+        model = MyUser
+        fields = ['email', 'role']
+        
+class CourseForm(forms.ModelForm):
+    class Meta:
+        model = MyCourse
+        fields = ['name', 'instructor', 'room', 'time']
+        
