@@ -13,6 +13,7 @@ from courseservice import CourseService
 from TASchedulerApp.utils.Notification import notification
 from django.contrib.auth import get_user_model
 
+
 # Create your tests here.
 
 class TestRedirectToDashboard(TestCase):
@@ -197,8 +198,7 @@ class TestNotification(unittest.TestCase):
 
     assert result is True
     assert notification().getNotificationQueue(recipient_id) == [message]
-    
-    
+
 class MyCourseModelTest(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(
