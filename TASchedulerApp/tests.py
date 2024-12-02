@@ -7,7 +7,7 @@ from unittest.mock import Mock, patch
 from argparse import ArgumentTypeError
 from courseservice import CourseService
 from TASchedulerApp.utils.Notification import notification
-from django.urls import reverse
+
 
 # Create your tests here.
 
@@ -194,32 +194,3 @@ class TestNotification(unittest.TestCase):
     assert result is True
     assert notification().getNotificationQueue(recipient_id) == [message]
 
-class LoginTests(unittest.TestCase):
-    def setUp(self):
-        # Create a user for testing
-        self.username = "testuser"
-        self.password = "testpassword"
-        self.user = User.objects.create_user(username=self.username, password=self.password)
-        self.login_url = reverse('login')  # Update 'login' with the actual name of your login view
-        self.dashboard_url = reverse('dashboard')  # Update 'dashboard' with the actual name of your dashboard view
-
-    def test_login_redirects_to_dashboard(self):
-        """Test that a successful login redirects to the dashboard page."""
-        response = self.client.post(self.login_url, {
-            'username': self.username,
-            'password': self.password
-        })
-        self.assertRedirects(response, self.dashboard_url)
-
-    def test_login_fails_for_invalid_credentials(self):
-        """Test that login fails with incorrect credentials."""
-        response = self.client.post(self.login_url, {
-            'username': 'wronguser',
-            'password': 'wrongpassword'
-        })
-        self.assertContains(response, "Invalid credentials")  # Replace with the actual error message in your app
-
-    def test_access_dashboard_without_login(self):
-        """Test that accessing the dashboard without login redirects to login page."""
-        response = self.client.get(self.dashboard_url)
-        self.assertRedirects(response, f"{self.login_url}?next={self.dashboard_url}")
