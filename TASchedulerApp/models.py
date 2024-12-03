@@ -69,4 +69,12 @@ class MyCourse(models.Model):
     def __str__(self):
         return self.name
 
+class Notification(models.Model):
+    title = models.CharField(max_length=255)
+    time_received = models.DateTimeField(auto_now_add=True)
+    sender = models.CharField(max_length=255)
+    recipient = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
     

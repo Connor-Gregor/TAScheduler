@@ -1,3 +1,5 @@
+from django.contrib import messages
+from django.core.mail import send_mail
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from .forms import CourseForm, RegistrationForm
@@ -7,7 +9,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
-from .models import MyCourse, MyUser
+from .models import MyCourse, MyUser, Notification
 
 
 # Create your views here.
@@ -182,3 +184,36 @@ def edit_course(request, course_id):
         return redirect('course_management')
 
     return render(request, 'admin/edit_course.html', {'course': course})
+
+def notifications(request):
+    # Filter notifications where the logged-in user is the recipient
+    notificationsList = Notification.objects.filter(recipient=request.user).order_by('-time_received')
+    return render(request, 'common/notifications.html', {'notifications': notificationsList})
+
+
+def send_notification(request):
+    if request.method == "POST":
+        title = request.POST.get('title')
+        sender = request.user.name
+        sender_email = request.user.email
+        recipient_email = request.POST.get('recipient_email')
+
+        # Validate recipient
+        try:
+            recipient = MyUser.objects.get(email=recipient_email)
+        except MyUser.DoesNotExist:
+            messages.error(request, "Invalid recipient email!")
+            return redirect('send_notifications')
+
+        # Create the notification
+        notification = Notification.objects.create(
+            title=title,
+            sender=sender,
+            recipient=recipient
+        )
+
+        # Send email to recipient
+
+        return redirect('notifications')
+
+    return render(request, 'instructor/send_notifications.html')
