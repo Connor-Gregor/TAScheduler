@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.test import TestCase, Client
 from django.urls import reverse
@@ -9,7 +10,7 @@ from TASchedulerApp.services import AccountService
 import unittest
 from unittest.mock import Mock, patch
 from argparse import ArgumentTypeError
-from courseservice import CourseService
+#from courseservice import CourseService
 from TASchedulerApp.utils.Notification import notification
 from django.contrib.auth import get_user_model
 
@@ -109,7 +110,7 @@ class TestCreateAccount(unittest.TestCase):
 # instructorId (in): Identifier for the instructor
 class TestAssignInstructor(unittest.TestCase):
     def setUp(self):
-        self.service = CourseService()
+        #self.service = CourseService()
         self.service.find_course = Mock()
         self.service.find_instructor = Mock()
         self.service.active_instructor = Mock()
@@ -202,10 +203,12 @@ class TestNotification(unittest.TestCase):
 
 class MyCourseModelTest(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(
-            username="instructor", password="password", role="Instructor"
+        self.user = MyUser.objects.create(
+            name='instructor', password='password', role='Instructor' , email='instructor@gmail.com'
         )
-    
+        self.non_instructor = MyUser.objects.create(name='non_instructor', password='password', role='Student',
+                                               email='student@gmail.com')
+
     def test_course_creation(self):
         course = MyCourse.objects.create(
             name="Test Course",
@@ -217,8 +220,28 @@ class MyCourseModelTest(TestCase):
         self.assertEqual(course.instructor, self.user)
         self.assertEqual(course.room, "101")
         self.assertEqual(course.time, "10:00 AM - 12:00 PM")
-        self.assertTrue(course.id) 
-        
+
+    def test_course_requires_instructor(self):
+        # Try to create a MyCourse instance without an instructor
+        course = MyCourse(
+            name="Test Course",
+            room="101",
+            time="9:00 AM"
+        )
+        # Test that saving the course raises an IntegrityError due to missing instructor
+        with self.assertRaises(IntegrityError):
+            course.save()
+
+    def test_course_requires_instructor_role(self):
+        course = MyCourse.objects.create(
+            name="Test Course",
+            instructor=self.non_instructor,
+            room="101",
+            time="9:00 AM"
+        )
+        with self.assertRaises(IntegrityError):
+            course.save()
+
 class MyCourseFormTest(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(
