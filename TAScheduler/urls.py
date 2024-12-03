@@ -33,18 +33,18 @@ urlpatterns = [
     # Common URLs (accessible by all roles)
     path('profile/', views.ProfileView.as_view(), name='profile'),
     #path('notifications/', views.NotificationsView.as_view(), name='notifications'),
-    path('notifications/', views.notifications, name='notifications'),
-    path('send-notifications/', views.send_notification, name='send_notifications'),
+    path('notifications/', views.Notifications.as_view(), name='notifications'),
+    path('send-notifications/', views.SendNotification.as_view(), name='send_notifications'),
 
     # Manage Accounts
-    path('account-management/', views.manage_users, name='account_management'),
-    path('edit-user/<int:user_id>/', views.edit_user, name='edit_user'),
-    path('delete-user/<int:user_id>/', views.delete_user, name='delete_user'),
+    path('account-management/', views.ManageUsers.as_view(), name='account_management'),
+    path('edit_user/<int:user_id>/', views.EditUser.as_view(), name='edit_user'),
+    path('delete-user/<int:user_id>/', views.DeleteUser.as_view(), name='delete_user'),
 
     # Administrator URLs
     path('course-management/', views.CreateCourseView.as_view(), name='course_management'),
     path('create-course/', views.CreateCourse.as_view(), name='create_course'),
-    path('edit-course/<int:course_id>/', views.edit_user, name='edit_course'),
+    path('edit-course/<int:course_id>/', views.EditCourse.as_view(), name='edit_course'),
     #path('admin/create_account/', views.CreateAccountView.as_view(), name='create_account'),
     #path('admin/delete_account/', views.DeleteAccountView.as_view(), name='delete_account'),
     #path('admin/edit_account/', views.EditAccountView.as_view(), name='edit_account'),
