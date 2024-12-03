@@ -44,7 +44,7 @@ class MyUser(AbstractBaseUser):
 
     def __str__(self):
         return self.name
-    
+
 
 class CustomUser(AbstractBaseUser):
     ROLE_CHOICES = [
@@ -54,12 +54,11 @@ class CustomUser(AbstractBaseUser):
     ]
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='TA')
 
-
 class MyCourse(models.Model):
     name = models.CharField(max_length=100)
     instructor = models.ForeignKey(
-        MyUser, 
-        on_delete=models.CASCADE, 
+        MyUser,
+        on_delete=models.CASCADE,
         limit_choices_to={'role': 'Instructor'},
         related_name='courses'
     )

@@ -52,6 +52,12 @@ class EditUserForm(forms.ModelForm):
         fields = ['email', 'role']
         
 class CourseForm(forms.ModelForm):
+    instructor = forms.ModelChoiceField(
+        queryset=MyUser.objects.filter(role='Instructor'),
+        required=True,
+        label="Instructor"
+    )
+
     class Meta:
         model = MyCourse
         fields = ['name', 'instructor', 'room', 'time']
