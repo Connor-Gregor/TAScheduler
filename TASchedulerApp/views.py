@@ -194,7 +194,8 @@ def notifications(request):
 def send_notification(request):
     if request.method == "POST":
         title = request.POST.get('title')
-        sender = request.user.name  # Assuming you want the logged-in user's name as the sender
+        sender = request.user.name
+        sender_email = request.user.email
         recipient_email = request.POST.get('recipient_email')
 
         # Validate recipient
