@@ -62,8 +62,9 @@ class Register(View):
 class CreateCourseView(LoginRequiredMixin, View):
     @method_decorator(role_required(allowed_roles=['Administrator']))
     def get(self, request):
-        # Implementation for GET request
-        return render(request, 'admin/course_management.html')
+        courses = MyCourse.objects.all()
+
+        return render(request, 'admin/course_management.html', {'courses': courses})
 
     @method_decorator(role_required(allowed_roles=['Administrator']))
     def post(self, request):
@@ -75,13 +76,11 @@ class CreateCourse(LoginRequiredMixin, View):
     def get(self, request):
         form = CourseForm()
         return render(request, 'admin/create_course.html', {'form': form})
-    
+
     def post(self, request):
         form = CourseForm(request.POST)
         if form.is_valid():
-            course = form.save(commit=False)
-            course.instructor = request.user
-            course.save()
+            course = form.save()
             return redirect('course_management')
         else:
             return render(request, 'admin/create_course.html', {'form': form})
