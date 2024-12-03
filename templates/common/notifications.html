@@ -2,9 +2,81 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notifications</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            width: 60%;
+            margin: 0 auto;
+            border: 1px solid #000;
+            padding: 20px;
+            text-align: center;
+        }
+        .notifications {
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .back-link {
+            margin-top: 20px;
+            display: inline-block;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-<h1>Notifications - Under construction</h1>
+    <div class="container">
+        <h1>Notifications</h1>
+        <!-- Adjust so instructor can also send notis -->
+        {% if user.role == 'Administrator' %}
+        <a href="{% url 'send_notifications' %}" class="btn">Send Notification</a>
+        {% endif %}
+        <div class="notifications">
+            <h2>Notifications:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Notification</th>
+                        <th>Time Received</th>
+                        <th>Sender</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for notification in notifications %}
+                    <tr>
+                        <td>{{ notification.title }}</td>
+                        <td>{{ notification.time_received|date:"M d, Y H:i" }}</td>
+                        <td>{{ notification.sender }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">No notifications available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <a href="{% url 'dashboard' %}" class="back-link">Back to dashboard</a>
+    </div>
 </body>
 </html>

@@ -4,7 +4,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 from TASchedulerApp.forms import CourseForm
-from TASchedulerApp.models import MyCourse, MyUser
+from TASchedulerApp.models import MyCourse, MyUser, Notification
 from TASchedulerApp.services import AccountService
 import unittest
 from unittest.mock import Mock, patch
@@ -149,55 +149,56 @@ class TestAssignInstructor(unittest.TestCase):
         self.service.assign_instructor.assert_called_with(1, 3)
 
 class TestNotification(unittest.TestCase):
-  def test_validID(self):
-    recipient_id = 123
-    message = "Test notification"
 
-    result = notification().sendNotification(recipient_id, message)
+    def test_validID(self):
+        recipient_id = 123
+        message = "Test notification"
 
-    assert result is True
-    assert notification().getNotificationQueue(recipient_id) == ["Test notification"]
+        result = notification().sendNotification(recipient_id, message)
 
-  def test_send_invalid_recipient(self):
-    recipient_id = -1  # Invalid ID
-    message = "Test notification"
+        assert result is True
+        assert notification().getNotificationQueue(recipient_id) == ["Test notification"]
 
-    try:
-      notification().sendNotification(recipient_id, message)
-    except ValueError as e:
-      assert str(e) == "Invalid recipient ID"
+    def test_send_invalid_recipient(self):
+        recipient_id = -1  # Invalid ID
+        message = "Test notification"
 
-  def test_send_null_and_empty_message(self):
-    recipient_id = 123
+        try:
+          notification().sendNotification(recipient_id, message)
+        except ValueError as e:
+          assert str(e) == "Invalid recipient ID"
 
-    try:
-      notification().sendNotification(recipient_id, None)
-    except ValueError as e:
-      assert str(e) == "Message cannot be null or empty"
+    def test_send_null_and_empty_message(self):
+        recipient_id = 123
 
-    try:
-      notification().sendNotification(recipient_id, "")
-    except ValueError as e:
-      assert str(e) == "Message cannot be null or empty"
+        try:
+          notification().sendNotification(recipient_id, None)
+        except ValueError as e:
+          assert str(e) == "Message cannot be null or empty"
 
-  def test_side_effects(self):
-    recipient_id = 123
-    message = "Test notification"
+        try:
+          notification().sendNotification(recipient_id, "")
+        except ValueError as e:
+          assert str(e) == "Message cannot be null or empty"
 
-    notification().sendNotification(recipient_id, message)
+    def test_side_effects(self):
+        recipient_id = 123
+        message = "Test notification"
 
-    queue = notification().getNotificationQueue(recipient_id)
-    assert len(queue) == 1
-    assert queue[0] == message
+        notification().sendNotification(recipient_id, message)
 
-  def test_boundary(self):
-    recipient_id = 1  # Smallest valid ID
-    message = "A" * 1000  # Longest message
+        queue = notification().getNotificationQueue(recipient_id)
+        assert len(queue) == 1
+        assert queue[0] == message
 
-    result = notification().sendNotification(recipient_id, message)
+    def test_boundary(self):
+        recipient_id = 1  # Smallest valid ID
+        message = "A" * 1000  # Longest message
 
-    assert result is True
-    assert notification().getNotificationQueue(recipient_id) == [message]
+        result = notification().sendNotification(recipient_id, message)
+
+        assert result is True
+        assert notification().getNotificationQueue(recipient_id) == [message]
 
 class MyCourseModelTest(TestCase):
     def setUp(self):

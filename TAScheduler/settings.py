@@ -126,3 +126,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = "/dashboard/"
 AUTH_USER_MODEL = 'TASchedulerApp.MyUser'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.uw.edu'  # Primary SMTP server
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True  # Use TLS for encryption
+EMAIL_HOST_USER = 'your_UW_NetID'  # Replace with your UW NetID
+EMAIL_HOST_PASSWORD = 'your_UW_NetID_password'

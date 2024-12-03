@@ -33,7 +33,8 @@ urlpatterns = [
     # Common URLs (accessible by all roles)
     path('profile/', views.ProfileView.as_view(), name='profile'),
     #path('notifications/', views.NotificationsView.as_view(), name='notifications'),
-    path('notifications/', views.NotificationView.as_view(), name='notifications'),
+    path('notifications/', views.notifications, name='notifications'),
+    path('send-notifications/', views.send_notification, name='send_notifications'),
 
     # Manage Accounts
     path('account-management/', views.manage_users, name='account_management'),
@@ -63,5 +64,4 @@ urlpatterns = [
     #path('ta/edit_contact_info/', views.EditContactInfoView.as_view(), name='edit_contact_info'),
     #path('ta/view_ta_assignments/', views.ViewTAAssignmentsTAView.as_view(), name='view_ta_assignments_ta'),
     #path('ta/view_public_contacts/', views.ViewPublicContactsView.as_view(), name='view_public_contacts'),
-
 ]
