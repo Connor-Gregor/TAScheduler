@@ -19,7 +19,6 @@
                 <th>Instructor</th>
                 <th>Room Number</th>
                 <th>Class Time</th>
-                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -29,11 +28,6 @@
                 <td>{{ course.instructor }}</td>
                 <td>{{ course.room }}</td>
                 <td>{{ course.time }}</td>
-                <td>
-                    <!-- Still needs to be implemented -->
-                    <a href="{# {% url 'edit_course' course.id %} #}">Edit</a>
-                    <a href="{# {% url 'delete_course' course.id %} #}">Delete</a>
-                </td>
             </tr>
             {% endfor %}
         </tbody>

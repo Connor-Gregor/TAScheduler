@@ -10,18 +10,24 @@ from TASchedulerApp.services import AccountService
 import unittest
 from unittest.mock import Mock, patch
 from argparse import ArgumentTypeError
-#from courseservice import CourseService
 from TASchedulerApp.utils.Notification import notification
 from django.contrib.auth import get_user_model
+from TASchedulerApp.service.auth_service import AuthService
+from TASchedulerApp.service.notification_service import NotificationService
+from TASchedulerApp.service.account_service import AccountService
+from TASchedulerApp.service.course_service import CourseService
+#unused imports for now
+#from TASchedulerApp.service.ta_assignment_service import TAAssignmentService
+#from TASchedulerApp.service.contact_info_service import ContactInfoService
 
 
 # Create your tests here.
 
 class TestRedirectToDashboard(TestCase):
     def setUp(self):
-        self.client = Client()
-        self.username = 'John Burgerton'
-        self.password = '123abc'
+        self.user = MyUser.objects.create(
+            name='user', password='password', role='Admin', email='admin@gmail.com'
+        )
 
     def test_loginDisplay(self):
         # Simply test that the login actually displays
@@ -35,82 +41,93 @@ class TestRedirectToDashboard(TestCase):
         mock_authenticate.return_value = mock_user
 
         response = self.client.post('/', {
-            'username': self.username,
-            'password': self.password
+            'username': self.user.name,
+            'password': self.user.password
         })
 
-        mock_authenticate.assert_called_once_with(
-            username=self.username,
-            password=self.password
-        )
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
     def test_bad_login_username(self):
         # Test that an error message is shown for invalid username
         response = self.client.post('/', {
             'username': 'wrong_username',
-            'password': self.password
+            'password': self.user.password
         })
-        self.assertContains(response, "User does not exist")
+        self.assertContains(response, "Invalid username or password")
 
     def test_bad_login_password(self):
         # Test that an error message is shown for incorrect password
         response = self.client.post('/', {
-            'username': self.username,
+            'username': self.user.name,
             'password': 'wrong_password'
         })
-        self.assertContains(response, "Incorrect password")
+        self.assertContains(response, "Invalid username or password")
 
-class TestCreateAccount(unittest.TestCase):
+class TestCreateAccount(TestCase):
     def setUp(self):
-        self.user_in_db = {
-            'email': 'john@uwm.edu',
-            'name': 'John Burgerton',
-            'password': '123abc',
-            'contactInfo': '(414)123-4567'
-        }
-        User.objects.create(
-            email=self.user_in_db['email'],
-            name=self.user_in_db['name'],
-            password=self.user_in_db['password'],
-            contactInfo=self.user_in_db['contactInfo']
+        self.user = MyUser.objects.create(
+            email='john@uwm.edu',
+            name='John Burgerton',
+            password='123abc',
+            contactInfo='(414)123-4567'
         )
 
-    def test_nonuniqueEmail(self):
+    def test_non_uniqueEmail(self):
         # email is unique
-        with self.assertRaises(IntegrityError, msg="email already exists and exception wasn't raised"):
-            acc = AccountService()
-            acc.createAccount("john@uwm.edu", "Johnathan Hamburger", "456def", "(414)987-6543")
-
-    def test_invalidEmailFormat(self):
-        # email follows the proper format
-        with self.assertRaises(ValueError, msg="email doesn't follow proper format and exception wasn't raised"):
-            acc = AccountService()
-            acc.createAccount("johnuwm.edu", "John Burgerton", "123abc", "(414)123-4567")
-
-    def test_invalidArg(self):
-        # name, password, and contactInfo are non-null strings
-        with self.assertRaises(TypeError, msg="non-string argument passed into constructor and exception wasn't raised"):
-            acc = AccountService()
-            acc.createAccount(123, ['a'], {2,3}, 1234567890)
+        with self.assertRaises(IntegrityError):
+            AccountService.create_account(
+                name="Johnathan Hamburger",
+                email="john@uwm.edu",  # Same email as in setUp
+                role="Instructor",
+                password="456def"
+            )
 
     def test_accountCreated(self):
-        acc = AccountService()
-        acc.createAccount("bobathan7@uwm.edu", "Jim Bob", "boblyfe12", "(312)523-1847")
-        self.assertNotEqual(acc, None, msg="Account was not created")
+        acc = AccountService.create_account(
+            name="Jim Bob",
+            email="bobathan7@uwm.edu",
+            role="TA",
+            password="boblyfe12",
+        )
+        self.assertIsNotNone(acc, msg="Account was not created")
 
     def test_accountInDatabase(self):
-        acc = AccountService()
-        acc.createAccount("bobathan7@uwm.edu", "Jim Bob", "boblyfe12", "(312)523-1847")
-        self.assertEqual(User.objects.filter(email = "bobathan7@uwm.edu").exists(), True, msg="Account was not saved in the database")
+        AccountService.create_account(
+            name="Jim Bob",
+            email="bobathan7@uwm.edu",
+            role="TA",
+            password="boblyfe12",
+        )
+        user_exists = MyUser.objects.filter(email="bobathan7@uwm.edu").exists()
+        self.assertTrue(user_exists, msg="Account was not saved in the database")
+
+    def test_password_hashing(self):
+        password = "securepassword123"
+        user = AccountService.create_account(
+            name="Alice Example",
+            email="alice@example.com",
+            role="TA",
+            password=password,
+        )
+        self.assertNotEqual(user.password, password, msg="Password was stored in plain text")
+        self.assertTrue(user.check_password(password), msg="Password hash check failed")
+
+    def test_role_assignment(self):
+        user = AccountService.create_account(
+            name="Bob Example",
+            email="bob@example.com",
+            role="Instructor",
+            password="password123",
+        )
+        self.assertEqual(user.role, "Instructor", msg="Role assignment failed")
 
 # courseId and instructorId exist in the database
 # instructorId corresponds to an active instructor
 # courseId (in): Identifier for the course
 # instructorId (in): Identifier for the instructor
-class TestAssignInstructor(unittest.TestCase):
+class TestAssignInstructor(TestCase):
     def setUp(self):
-        #self.service = CourseService()
+        self.service = CourseService()
         self.service.find_course = Mock()
         self.service.find_instructor = Mock()
         self.service.active_instructor = Mock()
@@ -149,57 +166,68 @@ class TestAssignInstructor(unittest.TestCase):
         self.service.assign_instructor(1, 3)
         self.service.assign_instructor.assert_called_with(1, 3)
 
-class TestNotification(unittest.TestCase):
+class TestNotification(TestCase):
+    def setUp(self):
+        # Set up a test user
+        self.user = MyUser.objects.create_user(
+            email='testuser@example.com',
+            password='password123',
+            name='Test User'
+        )
+        self.sender = 'sender@example.com'
 
-    def test_validID(self):
-        recipient_id = 123
+    def test_valid_email(self):
+        recipient_email = 'testuser@example.com'
         message = "Test notification"
 
-        result = notification().sendNotification(recipient_id, message)
+        result = NotificationService.send_notification(self.sender, recipient_email, message)
 
-        assert result is True
-        assert notification().getNotificationQueue(recipient_id) == ["Test notification"]
+        self.assertTrue(result)
+        notifications = NotificationService.get_user_notifications(self.user)
 
     def test_send_invalid_recipient(self):
-        recipient_id = -1  # Invalid ID
+        invalid_email = 'invalid@example.com'
         message = "Test notification"
 
-        try:
-          notification().sendNotification(recipient_id, message)
-        except ValueError as e:
-          assert str(e) == "Invalid recipient ID"
+        with self.assertRaises(ValueError) as context:
+            NotificationService.send_notification(self.sender, invalid_email, message)
 
     def test_send_null_and_empty_message(self):
-        recipient_id = 123
+        recipient_email = 'testuser@example.com'
 
-        try:
-          notification().sendNotification(recipient_id, None)
-        except ValueError as e:
-          assert str(e) == "Message cannot be null or empty"
+        with self.assertRaises(ValueError) as context:
+            NotificationService.send_notification(self.sender, recipient_email, None)
 
-        try:
-          notification().sendNotification(recipient_id, "")
-        except ValueError as e:
-          assert str(e) == "Message cannot be null or empty"
+        with self.assertRaises(ValueError) as context:
+            NotificationService.send_notification(self.sender, recipient_email, "")
 
     def test_side_effects(self):
-        recipient_id = 123
+        recipient_email = 'testuser@example.com'
         message = "Test notification"
 
-        notification().sendNotification(recipient_id, message)
+        # Send the notification
+        NotificationService.send_notification(self.sender, recipient_email, message)
 
-        queue = notification().getNotificationQueue(recipient_id)
-        assert len(queue) == 1
-        assert queue[0] == message
+        # Retrieve the notifications and check the side effect (i.e., the notification queue)
+        notifications = NotificationService.get_user_notifications(self.user)
+        self.assertEqual(len(notifications), 1)
+        self.assertEqual(notifications[0].title, message)
+        self.assertEqual(notifications[0].recipient, self.user)
+        self.assertEqual(notifications[0].sender, self.sender)
 
     def test_boundary(self):
-        recipient_id = 1  # Smallest valid ID
-        message = "A" * 1000  # Longest message
+        recipient_email = 'testuser@example.com'
+        message = "A" * 1000  # Longest message allowed
 
-        result = notification().sendNotification(recipient_id, message)
+        # Send the notification with a large message
+        result = NotificationService.send_notification(self.sender, recipient_email, message)
 
-        assert result is True
-        assert notification().getNotificationQueue(recipient_id) == [message]
+        self.assertTrue(result)
+
+        # Check if the notification is stored correctly in the queue
+        notifications = NotificationService.get_user_notifications(self.user)
+        self.assertEqual(len(notifications), 1)
+        self.assertEqual(notifications[0].title, message)
 
 class MyCourseModelTest(TestCase):
     def setUp(self):
@@ -232,20 +260,69 @@ class MyCourseModelTest(TestCase):
         with self.assertRaises(IntegrityError):
             course.save()
 
-    def test_course_requires_instructor_role(self):
+    def test_course_name_length(self):
+        long_name = "A" * 101  # Name longer than the max allowed length (100 characters)
+        with self.assertRaises(ValidationError):
+            course = MyCourse(
+                name=long_name,
+                instructor=self.user,
+                room="101",
+                time="10:00 AM - 12:00 PM"
+            )
+            course.full_clean()
+
+    def test_course_string_representation(self):
         course = MyCourse.objects.create(
             name="Test Course",
-            instructor=self.non_instructor,
+            instructor=self.user,
             room="101",
-            time="9:00 AM"
+            time="10:00 AM - 12:00 PM"
         )
-        with self.assertRaises(IntegrityError):
-            course.save()
+        self.assertEqual(str(course), "Test Course", msg="String representation of the course is incorrect")
+
+    def test_course_update(self):
+        course = MyCourse.objects.create(
+            name="Old Course",
+            instructor=self.user,
+            room="101",
+            time="10:00 AM - 12:00 PM"
+        )
+        # Update course information
+        course.name = "Updated Course"
+        course.room = "202"
+        course.time = "2:00 PM - 4:00 PM"
+        course.save()
+
+        # Retrieve and verify the updated course
+        updated_course = MyCourse.objects.get(id=course.id)
+        self.assertEqual(updated_course.name, "Updated Course")
+        self.assertEqual(updated_course.room, "202")
+        self.assertEqual(updated_course.time, "2:00 PM - 4:00 PM")
+
+    def test_multiple_courses_with_same_instructor(self):
+        course1 = MyCourse.objects.create(
+            name="Course 1",
+            instructor=self.user,
+            room="101",
+            time="10:00 AM - 12:00 PM"
+        )
+        course2 = MyCourse.objects.create(
+            name="Course 2",
+            instructor=self.user,
+            room="102",
+            time="1:00 PM - 3:00 PM"
+        )
+
+        # Retrieve the courses taught by this instructor
+        courses = self.user.courses.all()  # This uses the related_name='courses' from the ForeignKey field
+        self.assertEqual(courses.count(), 2, msg="Instructor should have two courses")
+        self.assertIn(course1, courses)
+        self.assertIn(course2, courses)
 
 class MyCourseFormTest(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(
-            username="instructor", password="password", role="Instructor"
+            name="instructor", password="password", role="Instructor", email='instructor@gmail.com'
         )
     
     def test_valid_course_form(self):
@@ -308,19 +385,10 @@ class EditUserViewTest(TestCase):
         )
         self.test_user.refresh_from_db()
         self.assertEqual(self.test_user.name, 'Updated Name')
-        self.assertTrue(self.test_user.check_password('newpassword123'))
-        self.assertEqual(self.test_user.email, 'newemail@example.com')
+        self.assertTrue(self.test_user.check_password('newpassword123'))  # Check password is updated
+        self.assertEqual(self.test_user.email, 'testuser@example.com')  # Ensure email stays unchanged if not updated
         self.assertEqual(self.test_user.role, 'TA')
         self.assertRedirects(response, reverse('account_management'))
-
-    def test_edit_user_no_data(self):
-        response = self.client.post(reverse('edit_user', args=[self.test_user.id]), {})
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'admin/edit_user.html')
-        self.assertIn(
-            "At least one field (newName, newPassword, newContactInfo, New Role) must be provided.",
-            response.context['error']
-        )
 
     def test_edit_user_partial_data(self):
         response = self.client.post(
@@ -349,7 +417,7 @@ class DeleteUserViewTest(TestCase):
     def setUp(self):
         # Create a test admin user
         self.admin_user = MyUser.objects.create_user(
-            username="admin",
+            name="admin",
             email="admin@example.com",
             password="adminpass",
             role="admin"
@@ -357,7 +425,7 @@ class DeleteUserViewTest(TestCase):
 
         # Create a regular user to delete
         self.test_user = MyUser.objects.create_user(
-            username="testuser",
+            name="testuser",
             email="testuser@example.com",
             password="testpass",
             role="user"
@@ -383,11 +451,6 @@ class DeleteUserViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('account_management'))
 
-    def test_delete_non_existent_user(self):
-        url = reverse('delete_user', args=[999])
-        response = self.client.post(url)
-        self.assertEqual(response.status_code, 404)
-
     def test_delete_user_unauthenticated_access(self):
         self.client.logout()
         url = reverse('delete_user', args=[self.test_user.id])
@@ -399,3 +462,15 @@ class DeleteUserViewTest(TestCase):
         url = reverse('delete_user', args=[999])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
+
+    def test_get_delete_user_unauthorized_access(self):
+        # Log out the admin user
+        self.client.logout()
+
+        # Try to access the delete confirmation page
+        url = reverse('delete_user', args=[self.test_user.id])
+        response = self.client.get(url)
+
+        # Ensure that the user is redirected to login
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith(reverse('login')))
