@@ -53,6 +53,9 @@ urlpatterns = [
     #path('admin/assign_ta_labs/', views.AssignTALabsAdminView.as_view(), name='assign_ta_labs_admin'),
     #path('admin/send_notifications/', views.SendNotificationsView.as_view(), name='send_notifications_admin'),
 
+    # Assign instructors and TAs to courses
+    path('tascheduler/course/<int:course_id>/assign/', views.assign_users_to_course, name='assign_users_to_course'),
+
     # Instructor URLs
     #path('instructor/view_course_assignments/', views.ViewCourseAssignmentsView.as_view(),name='view_course_assignments'),
     #path('instructor/view_ta_assignments/', views.ViewTAAssignmentsInstructorView.as_view(),name='view_ta_assignments_instructor'),

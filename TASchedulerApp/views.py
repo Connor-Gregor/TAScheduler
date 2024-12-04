@@ -6,12 +6,12 @@ from django.utils.decorators import method_decorator
 from .decorators import role_required
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .models import MyCourse, MyUser, Notification
 from .service.account_service import AccountService
 from .service.auth_service import AuthService
-from .service.course_service import CourseService
+from .service.course_service import CourseService, assign_instructor_and_tas
 from .service.notification_service import NotificationService
 
 # Create your views here.
@@ -184,3 +184,39 @@ class SendNotification(LoginRequiredMixin, View):
             return redirect('send_notifications')
 
         return redirect('notifications')
+
+def is_admin(user):
+    return user.is_superuser
+
+@login_required
+def assign_users_to_course(request, course_id):
+    course = get_object_or_404(MyCourse, id=course_id)
+    instructors = MyUser.objects.filter(role='Instructor')
+    tas = MyUser.objects.filter(role='TA')
+
+    if request.method == 'POST':
+        instructor_id = request.POST.get('instructor')
+        ta_id = request.POST.get('tas')
+
+        print(f"Received instructor ID: {instructor_id}")
+        print(f"Received TA ID: {ta_id}")
+
+        result = assign_instructor_and_tas(course_id, instructor_id, ta_id)
+
+        print(f"Service result: {result}")
+
+        if result['success']:
+            return redirect('course_management')
+        else:
+            return render(request, 'admin/assign_users.html', {
+                'course': course,
+                'instructors': instructors,
+                'tas': tas,
+                'error': result['message']
+            })
+
+    return render(request, 'admin/assign_users.html', {
+        'course': course,
+        'instructors': instructors,
+        'tas': tas
+    })
