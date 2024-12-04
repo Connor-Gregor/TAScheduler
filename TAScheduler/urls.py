@@ -19,6 +19,7 @@ from django.contrib.auth.views import LogoutView
 from django.urls import path
 
 from TASchedulerApp import views
+from TASchedulerApp.views import assign_users_to_course
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -54,7 +55,7 @@ urlpatterns = [
     #path('admin/send_notifications/', views.SendNotificationsView.as_view(), name='send_notifications_admin'),
 
     # Assign instructors and TAs to courses
-    path('tascheduler/course/<int:course_id>/assign/', views.assign_users_to_course, name='assign_users_to_course'),
+    path('assign_users/<int:course_id>/', assign_users_to_course, name='assign_users_to_course'),
 
     # Instructor URLs
     #path('instructor/view_course_assignments/', views.ViewCourseAssignmentsView.as_view(),name='view_course_assignments'),

@@ -110,6 +110,7 @@ class ManageUsers(LoginRequiredMixin, View):
         return render(request, 'admin/manage_users.html', {'users': users})
 
 
+@method_decorator(login_required, name='dispatch')
 class EditUser(LoginRequiredMixin, View):
     def get(self, request, user_id):
         user = get_object_or_404(MyUser, id=user_id)
