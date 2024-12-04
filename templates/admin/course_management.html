@@ -19,6 +19,7 @@
                 <th>Instructor</th>
                 <th>Room Number</th>
                 <th>Class Time</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -28,6 +29,12 @@
                 <td>{{ course.instructor }}</td>
                 <td>{{ course.room }}</td>
                 <td>{{ course.time }}</td>
+                <td>
+                    <!-- Button to Assign Users -->
+                    <a href="{% url 'assign_users_to_course' course.id %}" style="text-decoration: none;">
+                        <button>Assign Users</button>
+                    </a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
