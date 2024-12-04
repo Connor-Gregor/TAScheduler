@@ -20,6 +20,8 @@
 
         <button type="submit">Send Notification</button>
     </form>
+
+    <a href="{% url 'notifications' %}">Go back to notifications</a>
     <!-- Display error messages -->
     {% if messages %}
         {% for message in messages %}

@@ -56,8 +56,8 @@ class Register(View):
             # Call AccountService.create_account to handle user creation and password hashing
             AccountService.create_account(name, email, role, password)
 
-            # Redirect to the login page after successful registration
-            return redirect('login')
+            # Redirect back to the account management page after admin makes the new account
+            return redirect('account_management')
         else:
             return render(request, 'common/register.html', {'form': form})
 
