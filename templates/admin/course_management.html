@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Courses</title>
     <style>
-       
+        /* General Reset */
         * {
             margin: 0;
             padding: 0;
@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f0f2f5;
+            background-color: #f4f4f9;
             color: #333;
             display: flex;
             justify-content: center;
@@ -24,47 +24,59 @@
         }
 
         .container {
-            background: #ffffff;
+            background: #fff;
             border-radius: 12px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            max-width: 900px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            max-width: 1000px;
             width: 100%;
-            padding: 40px 40px;
-            text-align: center;
+            padding: 30px;
         }
 
         h1 {
+            text-align: center;
             font-size: 2rem;
             color: #2c3e50;
-            margin-bottom: 30px;
-        }
-
-        /* Buttons Styling */
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 15px 20px;
-            border-radius: 6px;
-            text-decoration: none;
-            color: white;
-            font-size: 1rem;
             margin-bottom: 20px;
-            font-weight: bold;
         }
 
-        .btn.create {
+        /* Button Styling */
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .btn.assign {
             background-color: #28a745;
         }
 
-        .btn.dashboard {
-            background-color: #007bff;
+        .btn.assign:hover {
+            background-color: #218838;
+        }
+
+        .btn.create {
+            margin-top: 20px;
+            display: block;
+            text-align: center;
         }
 
         /* Table Styling */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-top: 20px;
         }
 
         thead {
@@ -73,29 +85,32 @@
         }
 
         th, td {
-            padding: 15px;
+            padding: 12px 15px;
             border: 1px solid #ddd;
             text-align: left;
-        }
-
-        td {
-            font-size: 1rem;
         }
 
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
 
-        .empty {
-            text-align: center;
-            font-style: italic;
-            color: #888;
+        tr:hover {
+            background-color: #f1f1f1;
         }
 
-        /* Responsive Design */
+        td {
+            font-size: 1rem;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
         @media (max-width: 768px) {
             .container {
-                padding: 30px;
+                padding: 20px;
             }
 
             h1 {
@@ -107,7 +122,7 @@
             }
 
             .btn {
-                padding: 12px;
+                padding: 8px;
             }
         }
     </style>
@@ -115,10 +130,10 @@
 <body>
     <div class="container">
         <h1>Manage Courses</h1>
-        
-        <!-- Create Course Button -->
-        <a href="{% url 'create_course' %}" class="btn create">Create Course</a>
-        
+
+        <!-- Back to Dashboard Button -->
+        <a href="{% url 'dashboard' %}" class="btn">Back to Dashboard</a>
+
         <!-- Courses Table -->
         <table>
             <thead>
@@ -127,6 +142,7 @@
                     <th>Instructor</th>
                     <th>Room Number</th>
                     <th>Class Time</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -136,17 +152,23 @@
                     <td>{{ course.instructor }}</td>
                     <td>{{ course.room }}</td>
                     <td>{{ course.time }}</td>
+                    <td class="actions">
+                        <!-- Button to Assign Users -->
+                        <a href="{% url 'assign_users_to_course' course.id %}" class="btn assign">Assign Users</a>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="empty">No courses available.</td>
+                    <td colspan="5" style="text-align: center; font-style: italic; color: #888;">
+                        No courses available.
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
 
-        
-        <a href="{% url 'dashboard' %}" class="btn dashboard">Back to Dashboard</a>
+        <!-- Create Course Button -->
+        <a href="{% url 'create_course' %}" class="btn btn create">Create Course</a>
     </div>
 </body>
 </html>
