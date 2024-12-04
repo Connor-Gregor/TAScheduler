@@ -45,6 +45,16 @@ class MyUser(AbstractBaseUser):
     def __str__(self):
         return self.name
 
+    def has_perm(self, perm, obj=None):
+        if self.is_superuser:
+            return True
+        return False
+
+    def has_module_perms(self, app_label):
+        if self.is_superuser:
+            return True
+        return False
+
 
 class CustomUser(AbstractBaseUser):
     ROLE_CHOICES = [
@@ -54,17 +64,26 @@ class CustomUser(AbstractBaseUser):
     ]
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='TA')
 
+
 class MyCourse(models.Model):
     name = models.CharField(max_length=100)
     instructor = models.ForeignKey(
         MyUser,
         on_delete=models.CASCADE,
         limit_choices_to={'role': 'Instructor'},
-        related_name='courses'
+        related_name='courses',
+        null=True,
+        blank=True
+    )
+    tas = models.ManyToManyField(
+        MyUser,
+        limit_choices_to={'role': 'TA'},
+        related_name='ta_courses',
+        blank=True
     )
     room = models.CharField(max_length=10)
     time = models.CharField(max_length=100)
-    
+
     def __str__(self):
         return self.name
 
@@ -76,4 +95,3 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.title
-    
