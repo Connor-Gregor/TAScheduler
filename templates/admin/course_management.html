@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Courses</title>
     <style>
-        /* General Reset */
+        
         * {
             margin: 0;
             padding: 0;
@@ -131,9 +131,6 @@
     <div class="container">
         <h1>Manage Courses</h1>
 
-        <!-- Back to Dashboard Button -->
-        <a href="{% url 'dashboard' %}" class="btn">Back to Dashboard</a>
-
         <!-- Courses Table -->
         <table>
             <thead>
@@ -169,6 +166,9 @@
 
         <!-- Create Course Button -->
         <a href="{% url 'create_course' %}" class="btn btn create">Create Course</a>
+
+        <!-- Back to Dashboard Button -->
+        <a href="{% url 'dashboard' %}" class="btn" style="margin-top: 20px;">Back to Dashboard</a>
     </div>
 </body>
 </html>
