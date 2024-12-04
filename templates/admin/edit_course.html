@@ -2,35 +2,150 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Course</title>
+    <style>
+     
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            color: #3498db;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            input {
+                padding: 10px;
+            }
+
+            button {
+                padding: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Create Course</h1>
-    <form method="post">
-        {% csrf_token %}
-        
-        <!-- course name -->
-        <label for="name">Course Name:</label>
-        <input type="text" name="name" id="name" value="{{ form.name.value }}">
-        <br>
-        
-        <!-- instructor -->
-        <label for="instructor">Instructor:</label>
-        <input type="text" name="instructor" id="instructor" value="{{ form.instructor.value }}">
-        <br>
-        
-        <!-- room -->
-        <label for="room">Room Number:</label>
-        <input type="text" name="room" id="room" value="{{ form.room.value }}">
-        <br>
-        
-        <!-- time -->
-        <label for="times">Times:</label>
-        <input type="text" name="times" id="times" value="{{ form.time.value }}">
-        <br>
-    
-        <button type="submit">Save Changes</button>
-        <a href="{% url 'course_management' %}">Cancel</a>
-    </form>
+    <div class="container">
+        <h1>Create Course</h1>
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Course Name -->
+            <div class="form-group">
+                <label for="name">Course Name:</label>
+                <input type="text" name="name" id="name" value="{{ form.name.value }}" placeholder="Enter course name">
+            </div>
+            
+            <!-- Instructor -->
+            <div class="form-group">
+                <label for="instructor">Instructor:</label>
+                <input type="text" name="instructor" id="instructor" value="{{ form.instructor.value }}" placeholder="Enter instructor name">
+            </div>
+            
+            <!-- Room Number -->
+            <div class="form-group">
+                <label for="room">Room Number:</label>
+                <input type="text" name="room" id="room" value="{{ form.room.value }}" placeholder="Enter room number">
+            </div>
+            
+            <!-- Times -->
+            <div class="form-group">
+                <label for="times">Times:</label>
+                <input type="text" name="times" id="times" value="{{ form.time.value }}" placeholder="Enter class times">
+            </div>
+
+            <!-- Submit and Cancel -->
+            <button type="submit">Save Changes</button>
+            <a href="{% url 'course_management' %}">Cancel</a>
+        </form>
+    </div>
 </body>
 </html>

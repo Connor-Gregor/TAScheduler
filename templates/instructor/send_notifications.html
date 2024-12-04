@@ -4,27 +4,158 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Send Notification</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .error-messages {
+            margin-top: 20px;
+            color: red;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .back-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            margin-top: 20px;
+        }
+
+        .back-btn:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            input, button {
+                padding: 10px;
+            }
+
+            .back-btn {
+                padding: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Send Notification</h1>
+    <div class="container">
+        <h1>Send Notification</h1>
 
+        <form method="POST">
+            {% csrf_token %}
+            <!-- Notification Title -->
+            <div class="form-group">
+                <label for="title">Notification Title</label>
+                <input type="text" id="title" name="title" placeholder="Enter the notification title" required>
+            </div>
 
+            <!-- Recipient Email -->
+            <div class="form-group">
+                <label for="recipient_email">Recipient Email</label>
+                <input type="email" id="recipient_email" name="recipient_email" placeholder="Enter recipient email" required>
+            </div>
 
-    <form method="POST">
-        {% csrf_token %}
-        <label for="title">Notification Title</label>
-        <input type="text" id="title" name="title" placeholder="Enter the notification title" required><br>
+            <!-- Send Button -->
+            <button type="submit">Send Notification</button>
+        </form>
 
-        <label for="recipient_email">Recipient Email</label>
-        <input type="email" id="recipient_email" name="recipient_email" placeholder="Enter recipient email" required><br>
+        <!-- Display Error Messages -->
+        {% if messages %}
+            <div class="error-messages">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
 
-        <button type="submit">Send Notification</button>
-    </form>
-    <!-- Display error messages -->
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    {% endif %}
+        <!-- Back to Dashboard Button -->
+        <a href="{% url 'dashboard' %}" class="back-btn">Back to Dashboard</a>
+    </div>
 </body>
 </html>
