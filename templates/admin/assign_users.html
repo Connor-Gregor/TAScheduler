@@ -1,31 +1,151 @@
-<h1>Assign Users to {{ course.name }}</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Users to {{ course.name }}</title>
+    <style>
+       
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<!-- Back to Course Management Button -->
-<a href="{% url 'course_management' %}" style="text-decoration: none;">
-    <button type="button" style="margin-bottom: 10px;">Back to Course Management</button>
-</a>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-<form method="post">
-    {% csrf_token %}
-    <label for="instructor">Instructor:</label>
-    <select name="instructor" id="instructor" required>
-        <option value="" {% if not course.instructor %}selected{% endif %}>-- Select Instructor --</option>
-        {% for instructor in instructors %}
-        <option value="{{ instructor.id }}" {% if course.instructor and course.instructor.id == instructor.id %}selected{% endif %}>
-            {{ instructor.name }}
-        </option>
-        {% endfor %}
-    </select>
+        .container {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            padding: 30px;
+            text-align: center;
+        }
 
-    <label for="tas">TA:</label>
-    <select name="tas" id="tas" required>
-        <option value="" {% if not course.tas.exists %}selected{% endif %}>-- Select TA --</option>
-        {% for ta in tas %}
-        <option value="{{ ta.id }}" {% if ta in course.tas.all %}selected{% endif %}>
-            {{ ta.name }}
-        </option>
-        {% endfor %}
-    </select>
+        h1 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
 
-    <button type="submit">Save Changes</button>
-</form>
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            text-align: left;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .back-btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            button, .back-btn {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Assign Users to {{ course.name }}</h1>
+
+        <!-- Form -->
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Instructor Dropdown -->
+            <label for="instructor">Instructor:</label>
+            <select name="instructor" id="instructor" required>
+                <option value="" {% if not course.instructor %}selected{% endif %}>-- Select Instructor --</option>
+                {% for instructor in instructors %}
+                <option value="{{ instructor.id }}" {% if course.instructor and course.instructor.id == instructor.id %}selected{% endif %}>
+                    {{ instructor.name }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <!-- TA Dropdown -->
+            <label for="tas">TA:</label>
+            <select name="tas" id="tas" required>
+                <option value="" {% if not course.tas.exists %}selected{% endif %}>-- Select TA --</option>
+                {% for ta in tas %}
+                <option value="{{ ta.id }}" {% if ta in course.tas.all %}selected{% endif %}>
+                    {{ ta.name }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <!-- Submit Button -->
+            <button type="submit">Save Changes</button>
+        </form>
+
+        <!-- Back to Course Management Button -->
+        <a href="{% url 'course_management' %}" class="back-btn">Back to Course Management</a>
+    </div>
+</body>
+</html>

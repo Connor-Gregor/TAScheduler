@@ -4,29 +4,147 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Send Notification</title>
+    <style>
+       
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .back-link {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-link:hover {
+            background-color: #0056b3;
+        }
+
+        .error-messages {
+            margin-top: 20px;
+            color: red;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            button, .back-link {
+                padding: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Send Notification</h1>
+    <div class="container">
+        <h1>Send Notification</h1>
 
+        <!-- Notification Form -->
+        <form method="POST">
+            {% csrf_token %}
+            
+            <label for="title">Notification Title</label>
+            <input type="text" id="title" name="title" placeholder="Enter the notification title" required>
 
+            <label for="recipient_email">Recipient Email</label>
+            <input type="email" id="recipient_email" name="recipient_email" placeholder="Enter recipient email" required>
 
-    <form method="POST">
-        {% csrf_token %}
-        <label for="title">Notification Title</label>
-        <input type="text" id="title" name="title" placeholder="Enter the notification title" required><br>
+            <button type="submit">Send Notification</button>
+        </form>
 
-        <label for="recipient_email">Recipient Email</label>
-        <input type="email" id="recipient_email" name="recipient_email" placeholder="Enter recipient email" required><br>
+        <!-- Back to Notifications Link -->
+        <a href="{% url 'notifications' %}" class="back-link">Go back to notifications</a>
 
-        <button type="submit">Send Notification</button>
-    </form>
-
-    <a href="{% url 'notifications' %}">Go back to notifications</a>
-    <!-- Display error messages -->
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    {% endif %}
+        <!-- Error Messages -->
+        {% if messages %}
+            <div class="error-messages">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
 </body>
 </html>

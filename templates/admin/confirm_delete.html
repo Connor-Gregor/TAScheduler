@@ -44,8 +44,15 @@
             color: #555;
         }
 
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
         button {
-            width: 48%;
+            flex: 1;
             padding: 12px;
             background-color: #e74c3c;
             color: white;
@@ -53,7 +60,6 @@
             border-radius: 6px;
             font-size: 1rem;
             cursor: pointer;
-            margin-right: 4%;
             transition: background-color 0.3s ease;
         }
 
@@ -62,8 +68,7 @@
         }
 
         a {
-            width: 48%;
-            display: inline-block;
+            flex: 1;
             padding: 12px;
             background-color: #3498db;
             color: white;
@@ -71,7 +76,6 @@
             border-radius: 6px;
             font-size: 1rem;
             text-align: center;
-            margin-left: 4%;
             transition: background-color 0.3s ease;
         }
 
@@ -80,17 +84,12 @@
         }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 1.5rem;
+            .button-group {
+                flex-direction: column;
             }
 
             button, a {
                 width: 100%;
-                margin: 10px 0;
             }
         }
     </style>
@@ -98,11 +97,13 @@
 <body>
     <div class="container">
         <h1>Confirm Delete</h1>
-        <p>Are you sure you want to delete user "{{ user.username }}"?</p>
+        <p>Are you sure you want to delete user?</p>
         <form method="post">
             {% csrf_token %}
-            <button type="submit">Yes, Delete</button>
-            <a href="{% url 'account_management' %}">Cancel</a>
+            <div class="button-group">
+                <button type="submit">Yes, Delete</button>
+                <a href="{% url 'account_management' %}">Cancel</a>
+            </div>
         </form>
     </div>
 </body>
