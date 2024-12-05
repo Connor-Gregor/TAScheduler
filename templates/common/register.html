@@ -22,6 +22,7 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             max-width: 500px;
             width: 100%;
+            text-align: center;
         }
         h1 {
             text-align: center;
@@ -37,7 +38,6 @@
             font-size: 1.2em;
             color: #4CAF50;
             margin-bottom: 10px;
-            text-align: center;
         }
         label {
             display: block;
@@ -72,16 +72,27 @@
             font-size: 1em;
             font-weight: 500;
             transition: background-color 0.3s ease;
+            margin-bottom: 20px; /* Add spacing between buttons */
         }
         button:hover {
             background-color: #388E3C;
         }
-        .error {
-            color: #FF5252;
-            font-size: 0.85em;
-            margin-top: -10px;
-            margin-bottom: 10px;
+        .secondary-button {
             display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            margin-bottom: 15px; /* Add spacing between buttons */
+            text-align: center;
+        }
+        .secondary-button:hover {
+            background-color: #0056b3;
         }
         @media (max-width: 600px) {
             form {
@@ -111,6 +122,8 @@
             {% endfor %}
         </fieldset>
         <button type="submit">Create Account</button>
+        <a href="{% url 'dashboard' %}" class="secondary-button">Go Back to Dashboard</a>
+        <a href="{% url 'account_management' %}" class="secondary-button">Go to Account Management</a>
     </form>
 </body>
 </html>
