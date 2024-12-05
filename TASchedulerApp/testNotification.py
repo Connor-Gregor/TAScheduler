@@ -34,19 +34,19 @@ class SendNotificationViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'instructor/send_notifications.html')
 
-    def test_valid_notification(self):
+    def test_invalid_notification(self):
         data = {
             'title': 'Test Notification',
-            'recipient_email': 'recipient@example.com'
+            'recipient_email': 'nonexistentuser@example.com'
         }
-        response = self.client.post(self.url, data)
+        response = self.client.post(self.url, data, follow=True)
 
-        notification = Notification.objects.first()
-        self.assertEqual(notification.title, 'Test Notification')
-        self.assertEqual(notification.sender, self.sender.name)
-        self.assertEqual(notification.recipient, self.recipient)
+        self.assertEqual(Notification.objects.count(), 0)
 
-        self.assertRedirects(response, reverse('notifications'))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(any("Invalid recipient email!" in str(message) for message in messages))
+
+        self.assertRedirects(response, self.url)
 
     def test_invalid_recipient_email(self):
         data = {
@@ -55,30 +55,29 @@ class SendNotificationViewTests(TestCase):
         }
         response = self.client.post(self.url, data, follow=True)
 
+        self.assertEqual(Notification.objects.count(), 0)
+
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(any("Invalid recipient email!" in str(message) for message in messages))
+
+        self.assertRedirects(response, self.url)
+
+    def test_missing_title(self):
+        data = {
+            'title': '',
+            'recipient_email': 'recipient@gmail.com'
+        }
+        response = self.client.post(self.url, data, follow=True)
+
         # Notification should not be created
         self.assertEqual(Notification.objects.count(), 0)
 
         # Check for the error message
         messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(any("Invalid recipient email!" in str(message) for message in messages))
+        self.assertTrue(any("Title cannot be empty!" in str(message) for message in messages))
 
         # Ensure we are redirected back to the form
         self.assertRedirects(response, self.url)
-    def test_missing_title(self):
-        data = {
-            'title': '',
-            'recipient_email': 'recipient@example.com'
-        }
-        response = self.client.post(self.url, data)
-
-        # Depending on your application's logic, decide if this should create a notification or not.
-        # Here, we'll assume a notification with an empty title is acceptable.
-
-        self.assertEqual(Notification.objects.count(), 1)
-        notification = Notification.objects.first()
-        self.assertEqual(notification.title, '')
-        self.assertEqual(notification.recipient, self.recipient)
-        self.assertRedirects(response, reverse('notifications'))
 
     def test_missing_email(self):
         data = {
