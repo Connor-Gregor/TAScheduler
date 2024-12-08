@@ -95,3 +95,31 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.title
+
+class LabSection(models.Model):
+    name = models.CharField(max_length=255)
+    section = models.CharField(max_length=50)
+    course = models.ForeignKey(
+        MyCourse,
+        on_delete=models.CASCADE,
+        related_name='lab_sections'
+    )
+    instructor = models.ForeignKey(
+        MyUser,
+        on_delete=models.SET_NULL,
+        limit_choices_to={'role': 'Instructor'},
+        related_name='lab_sections',
+        null=True,
+        blank=True
+    )
+    ta = models.ForeignKey(
+        MyUser,
+        on_delete=models.SET_NULL,
+        limit_choices_to={'role': 'TA'},
+        related_name='lab_sections_ta',
+        null=True,
+        blank=True
+    )
+
+    def __str__(self):
+        return self.name
