@@ -32,6 +32,8 @@ class MyUser(AbstractBaseUser):
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=50, unique=True)
     contactInfo = models.CharField(max_length=50, default='')
+    home_address = models.TextField(default='')
+    phone_number = models.CharField(max_length=15, default='')
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)

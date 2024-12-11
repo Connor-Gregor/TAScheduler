@@ -5,6 +5,14 @@
     <title>Title</title>
 </head>
 <body>
-<h1>User profile - Under construction</h1>
+    <h1>Profile</h1>
+    <p><strong>Name:</strong> {{ user.name }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Role:</strong> {{ user.role }}</p>
+    <p><strong>Home Address:</strong> {{ user.home_address }}</p>
+    <p><strong>Phone Number:</strong> {{ user.phone_number }}</p>
+
+    <a href="{% url 'edit_profile' %}" style="display: block; margin-top: 20px;">Edit Information</a>
+    <a href="{% url 'dashboard' %}" style="display: block; margin-top: 10px;">Back to Dashboard</a>
 </body>
 </html>

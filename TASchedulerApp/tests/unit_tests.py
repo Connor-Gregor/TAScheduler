@@ -4,6 +4,7 @@ from unittest.mock import Mock, patch
 from django.contrib.auth import get_user_model
 from TASchedulerApp.service.auth_service import AuthService
 from TASchedulerApp.service.course_service import CourseService, assign_instructor_and_tas
+from TASchedulerApp.service.edit_user_service import update_user_profile
 
 
 class AuthServiceLoginUnitTests(TestCase):
@@ -105,3 +106,91 @@ class CourseServiceTest(TestCase):
         self.assertEqual(self.course.instructor, original_data['instructor'])
         self.assertEqual(self.course.room, original_data['room'])
         self.assertEqual(self.course.time, original_data['time'])
+
+class UpdateUserProfileTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            name="OldName",
+            home_address="123 Old St",
+            phone_number="1234567890",
+            email="test@example.com",
+            password="oldpassword"
+        )
+        # Create a mock request object
+        self.mock_request = patch('django.http.HttpRequest').start()
+
+    @patch('TASchedulerApp.service.edit_user_service.update_session_auth_hash')
+    def test_update_name(self, mock_update_session_auth_hash):
+        update_user_profile(
+            request=self.mock_request,
+            user=self.user,
+            name="NewName",
+            home_address=self.user.home_address,
+            phone_number=self.user.phone_number,
+            password=None
+        )
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.name, "NewName")
+        self.assertEqual(self.user.home_address, "123 Old St")
+        self.assertEqual(self.user.phone_number, "1234567890")
+        mock_update_session_auth_hash.assert_not_called()
+
+    @patch('TASchedulerApp.service.edit_user_service.update_session_auth_hash')
+    def test_update_home_address(self, mock_update_session_auth_hash):
+        update_user_profile(
+            request=self.mock_request,
+            user=self.user,
+            name=self.user.name,
+            home_address="456 New Ave",
+            phone_number=self.user.phone_number,
+            password=None
+        )
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.name, "OldName")
+        self.assertEqual(self.user.home_address, "456 New Ave")
+        mock_update_session_auth_hash.assert_not_called()
+
+    @patch('TASchedulerApp.service.edit_user_service.update_session_auth_hash')
+    def test_update_phone_number(self, mock_update_session_auth_hash):
+        update_user_profile(
+            request=self.mock_request,
+            user=self.user,
+            name=self.user.name,
+            home_address=self.user.home_address,
+            phone_number="0987654321",
+            password=None
+        )
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.phone_number, "0987654321")
+        mock_update_session_auth_hash.assert_not_called()
+
+    @patch('TASchedulerApp.service.edit_user_service.update_session_auth_hash')
+    def test_update_password(self, mock_update_session_auth_hash):
+        update_user_profile(
+            request=self.mock_request,
+            user=self.user,
+            name=self.user.name,
+            home_address=self.user.home_address,
+            phone_number=self.user.phone_number,
+            password="newpassword"
+        )
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("newpassword"))
+        mock_update_session_auth_hash.assert_called_once_with(self.mock_request, self.user)
+
+    @patch('TASchedulerApp.service.edit_user_service.update_session_auth_hash')
+    def test_no_changes(self, mock_update_session_auth_hash):
+        update_user_profile(
+            request=self.mock_request,
+            user=self.user,
+            name=self.user.name,
+            home_address=self.user.home_address,
+            phone_number=self.user.phone_number,
+            password=None
+        )
+        self.user.refresh_from_db()
+        # Ensure no changes were made
+        self.assertEqual(self.user.name, "OldName")
+        self.assertEqual(self.user.home_address, "123 Old St")
+        self.assertEqual(self.user.phone_number, "1234567890")
+        mock_update_session_auth_hash.assert_not_called()
