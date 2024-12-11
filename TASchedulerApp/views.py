@@ -4,7 +4,7 @@ from django.views import View
 from .forms import CourseForm, RegistrationForm
 from django.utils.decorators import method_decorator
 from .decorators import role_required
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required, user_passes_test
 
@@ -13,6 +13,7 @@ from .service.account_service import AccountService
 from .service.auth_service import AuthService
 from .service.course_service import CourseService, assign_instructor_and_tas
 from .service.notification_service import NotificationService
+from .service.edit_user_service import update_user_profile
 
 # Create your views here.
 
@@ -221,3 +222,21 @@ def assign_users_to_course(request, course_id):
         'instructors': instructors,
         'tas': tas
     })
+
+
+@login_required
+def edit_profile(request):
+    user = request.user
+    if request.method == 'POST':
+        name = request.POST.get('name', user.name)
+        home_address = request.POST.get('home_address', user.home_address)
+        phone_number = request.POST.get('phone_number', user.phone_number)
+        password = request.POST.get('password', None)
+
+        # Call the service function to update the user profile
+        update_user_profile(request, user, name, home_address, phone_number, password)
+
+        messages.success(request, "Your profile has been updated successfully!")
+        return redirect('edit_profile')
+
+    return render(request, 'common/edit_profile.html', {'user': user})
