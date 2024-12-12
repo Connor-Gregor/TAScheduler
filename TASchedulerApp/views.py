@@ -240,3 +240,15 @@ def edit_profile(request):
         return redirect('edit_profile')
 
     return render(request, 'common/edit_profile.html', {'user': user})
+
+@login_required
+def view_ta_assignments(request):
+    ta_users = MyUser.objects.filter(role='TA')
+    context = {'ta_users': ta_users}
+    return render(request, 'common/view_ta_assignments.html', context)
+
+@login_required
+def view_public_contacts(request):
+    public_contacts = MyUser.objects.values('name', 'email', 'phone_number')
+    context = {'public_contacts': public_contacts}
+    return render(request, 'common/view_public_contacts.html', context)
