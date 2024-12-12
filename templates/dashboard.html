@@ -180,6 +180,16 @@
             </table>
         </div>
         {% endif %}
+
+        <!-- only has the admin-links class so that its centered and padded right -->
+        <div class="admin-links">
+            <table>
+                <tr>
+                    <td><a href="{% url 'view_ta_assignments' %}">View all TA Assignments</a></td>
+                    <td><a href="{% url 'view_public_contacts' %}">View public contact information</a></td>
+                </tr>
+            </table>
+        </div>
     </div>
 </body>
 </html>
