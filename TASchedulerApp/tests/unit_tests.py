@@ -114,6 +114,8 @@ class UpdateUserProfileTests(TestCase):
             home_address="123 Old St",
             phone_number="1234567890",
             email="test@example.com",
+            office_hours="today",
+            office_location="E123",
             password="oldpassword"
         )
         # Create a mock request object
@@ -127,6 +129,8 @@ class UpdateUserProfileTests(TestCase):
             name="NewName",
             home_address=self.user.home_address,
             phone_number=self.user.phone_number,
+            office_hours=self.user.office_hours,
+            office_location=self.user.office_location,
             password=None
         )
         self.user.refresh_from_db()
@@ -143,6 +147,8 @@ class UpdateUserProfileTests(TestCase):
             name=self.user.name,
             home_address="456 New Ave",
             phone_number=self.user.phone_number,
+            office_hours=self.user.office_hours,
+            office_location=self.user.office_location,
             password=None
         )
         self.user.refresh_from_db()
@@ -158,6 +164,8 @@ class UpdateUserProfileTests(TestCase):
             name=self.user.name,
             home_address=self.user.home_address,
             phone_number="0987654321",
+            office_hours=self.user.office_hours,
+            office_location=self.user.office_location,
             password=None
         )
         self.user.refresh_from_db()
@@ -172,6 +180,8 @@ class UpdateUserProfileTests(TestCase):
             name=self.user.name,
             home_address=self.user.home_address,
             phone_number=self.user.phone_number,
+            office_hours=self.user.office_hours,
+            office_location=self.user.office_location,
             password="newpassword"
         )
         self.user.refresh_from_db()
@@ -186,6 +196,8 @@ class UpdateUserProfileTests(TestCase):
             name=self.user.name,
             home_address=self.user.home_address,
             phone_number=self.user.phone_number,
+            office_hours=self.user.office_hours,
+            office_location=self.user.office_location,
             password=None
         )
         self.user.refresh_from_db()
@@ -193,4 +205,38 @@ class UpdateUserProfileTests(TestCase):
         self.assertEqual(self.user.name, "OldName")
         self.assertEqual(self.user.home_address, "123 Old St")
         self.assertEqual(self.user.phone_number, "1234567890")
+        mock_update_session_auth_hash.assert_not_called()
+
+    @patch('TASchedulerApp.service.edit_user_service.update_session_auth_hash')
+    def test_update_office_hours(self, mock_update_session_auth_hash):
+        update_user_profile(
+            request=self.mock_request,
+            user=self.user,
+            name=self.user.name,
+            home_address=self.user.home_address,
+            phone_number=self.user.phone_number,
+            office_hours="Fridays",
+            office_location=self.user.office_location,
+            password=None
+        )
+
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.office_hours, "Fridays")
+        mock_update_session_auth_hash.assert_not_called()
+
+    @patch('TASchedulerApp.service.edit_user_service.update_session_auth_hash')
+    def test_update_office_location(self, mock_update_session_auth_hash):
+        update_user_profile(
+            request=self.mock_request,
+            user=self.user,
+            name=self.user.name,
+            home_address=self.user.home_address,
+            phone_number=self.user.phone_number,
+            office_hours=self.user.office_hours,
+            office_location="Ur moms house",
+            password=None
+        )
+
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.office_location, "Ur moms house")
         mock_update_session_auth_hash.assert_not_called()
