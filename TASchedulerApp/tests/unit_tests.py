@@ -50,9 +50,18 @@ class AuthServiceLoginUnitTests(TestCase):
 class CourseServiceTest(TestCase):
 
     def setUp(self):
+        self.user_data = {
+            'name': 'Boyland',
+            'email': 'test1@testing.com',
+            'password': '123',
+            'role': 'Instructor',
+            'office_hours': '8:00 AM',
+            'office_location': 'Room 100'
+        }
+        self.instructor = MyUser.objects.create_user(**self.user_data)
         self.course = MyCourse.objects.create(
             name="CS 351",
-            instructor="Boyland",
+            instructor=self.instructor,
             room="Room 200",
             time="10:00 AM"
         )
@@ -64,10 +73,19 @@ class CourseServiceTest(TestCase):
         self.assertEqual(self.course.name, 'Chang')
 
     def test_edit_course_instructor(self):
-        new_data = {'new_instructor': 'John'}
+        self.user_data = {
+            'name': 'John1',
+            'email': 'test2@testing.com',
+            'password': '1234',
+            'role': 'Instructor',
+            'office_hours': '8:00 AM',
+            'office_location': 'Room 100'
+        }
+        self.instructor1 = MyUser.objects.create_user(**self.user_data)
+        new_data = {'new_instructor': self.instructor1}
         CourseService.edit_course(self.course.id, new_data)
         self.course.refresh_from_db()
-        self.assertEqual(self.course.instructor, 'John')
+        self.assertEqual(self.course.instructor, self.instructor1)
 
     def test_edit_course_room(self):
         new_data = {'new_room': 'Room 202'}
@@ -82,16 +100,25 @@ class CourseServiceTest(TestCase):
         self.assertEqual(self.course.time, '2:00 PM')
 
     def test_edit_multiple_fields(self):
+        self.user_data = {
+            'name': 'Boyland2',
+            'email': 'test2@testing.com',
+            'password': '123',
+            'role': 'Instructor',
+            'office_hours': '8:00 AM',
+            'office_location': 'Room 100'
+        }
+        self.instructor1 = MyUser.objects.create_user(**self.user_data)
         new_data = {
             'new_name': 'John',
-            'new_instructor': 'Boyland',
+            'new_instructor': self.instructor1,
             'new_room': 'Room 303',
             'new_time': '4:00 PM'
         }
         CourseService.edit_course(self.course.id, new_data)
         self.course.refresh_from_db()
         self.assertEqual(self.course.name, 'John')
-        self.assertEqual(self.course.instructor, 'Boyland')
+        self.assertEqual(self.course.instructor, self.instructor1)
         self.assertEqual(self.course.room, 'Room 303')
         self.assertEqual(self.course.time, '4:00 PM')
 
