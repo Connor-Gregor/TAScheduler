@@ -16,9 +16,9 @@ from TASchedulerApp.service.auth_service import AuthService
 from TASchedulerApp.service.notification_service import NotificationService
 from TASchedulerApp.service.account_service import AccountService
 from TASchedulerApp.service.course_service import CourseService, assign_instructor_and_tas
-#unused imports for now
+#unused import for now
 #from TASchedulerApp.service.ta_assignment_service import TAAssignmentService
-#from TASchedulerApp.service.contact_info_service import ContactInfoService
+
 
 
 # Create your tests here.
@@ -140,12 +140,12 @@ class TestAssignUsers(TestCase):
         self.client.force_login(self.admin_user)
 
     def test_assign_users_get(self):
-        response = self.client.get(reverse('assign_users_to_course', args=[self.course.id]))
+        response = self.client.get(reverse('course_assignment'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Course 1")
 
     def test_assign_users_success(self):
-        response = self.client.post(reverse('assign_users_to_course', args=[self.course.id]), {
+        response = self.client.post(reverse('course_assignment'), {
             'instructor': self.instructor.id,
             'tas': self.ta.id
         })
