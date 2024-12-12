@@ -136,6 +136,8 @@
                     <td>{{ user.name }}</td>
                     <td>{{ user.email }}</td>
                     <td>{{ user.role }}</td>
+                    <td>{{ user.phone_number }}</td>
+                    <td>{{ user.home_address }}</td>
                     <td class="actions">
                         <a href="{% url 'edit_user' user.id %}">Edit</a>
                         <a href="{% url 'delete_user' user.id %}">Delete</a>
