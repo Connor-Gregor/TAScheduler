@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from TASchedulerApp.service.auth_service import AuthService
 from TASchedulerApp.service.course_service import CourseService, assign_instructor_and_tas
 from TASchedulerApp.service.edit_user_service import update_user_profile
+from TASchedulerApp.service.account_service import AccountService
 
 
 class AuthServiceLoginUnitTests(TestCase):
