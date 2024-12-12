@@ -61,4 +61,20 @@ class CourseForm(forms.ModelForm):
     class Meta:
         model = MyCourse
         fields = ['name', 'instructor', 'room', 'time']
-        
+
+class CourseAssignmentForm(forms.Form):
+    course = forms.ModelChoiceField(
+        queryset=MyCourse.objects.all(),
+        label="Select Course"
+    )
+    instructor = forms.ModelChoiceField(
+        queryset=MyUser.objects.filter(role='Instructor'),
+        label="Select Instructor",
+        required=False
+    )
+    tas = forms.ModelMultipleChoiceField(
+        queryset=MyUser.objects.filter(role='TA'),
+        label="Select TAs",
+        required=False,
+        widget=forms.CheckboxSelectMultiple
+    )
