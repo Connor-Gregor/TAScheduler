@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Assignment</title>
+    <style>
+        /* Add your CSS styling here */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Course Assignment</h1>
+
+        <!-- Existing Courses -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Instructor</th>
+                    <th>TAs</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses %}
+                <tr>
+                    <td>{{ course.name }}</td>
+                    <td>
+                        {% if course.instructor %}
+                            {{ course.instructor.name }}
+                        {% else %}
+                            Unassigned
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if course.tas.all %}
+                            {% for ta in course.tas.all %}
+                                {{ ta.name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            No TAs assigned
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" style="text-align: center; font-style: italic; color: #888;">
+                        No courses available.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Assignment Form -->
+        <form method="post" style="margin-top: 20px;">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn assign">Assign</button>
+        </form>
+
+        <!-- Back to Dashboard Button -->
+        <a href="{% url 'dashboard' %}" class="btn" style="margin-top: 20px;">Back to Dashboard</a>
+    </div>
+</body>
+</html>

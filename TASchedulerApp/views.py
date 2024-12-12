@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from .forms import CourseForm, RegistrationForm
+from .forms import CourseForm, RegistrationForm, CourseAssignmentForm
 from django.utils.decorators import method_decorator
 from .decorators import role_required
 from django.contrib.auth import authenticate, login, update_session_auth_hash
@@ -14,6 +14,8 @@ from .service.auth_service import AuthService
 from .service.course_service import CourseService, assign_instructor_and_tas
 from .service.notification_service import NotificationService
 from .service.edit_user_service import update_user_profile
+
+
 
 # Create your views here.
 
@@ -187,42 +189,6 @@ class SendNotification(LoginRequiredMixin, View):
 
         return redirect('notifications')
 
-def is_admin(user):
-    return user.is_superuser
-
-@login_required
-def assign_users_to_course(request, course_id):
-    course = get_object_or_404(MyCourse, id=course_id)
-    instructors = MyUser.objects.filter(role='Instructor')
-    tas = MyUser.objects.filter(role='TA')
-
-    if request.method == 'POST':
-        instructor_id = request.POST.get('instructor')
-        ta_id = request.POST.get('tas')
-
-        print(f"Received instructor ID: {instructor_id}")
-        print(f"Received TA ID: {ta_id}")
-
-        result = assign_instructor_and_tas(course_id, instructor_id, ta_id)
-
-        print(f"Service result: {result}")
-
-        if result['success']:
-            return redirect('course_management')
-        else:
-            return render(request, 'admin/assign_users.html', {
-                'course': course,
-                'instructors': instructors,
-                'tas': tas,
-                'error': result['message']
-            })
-
-    return render(request, 'admin/assign_users.html', {
-        'course': course,
-        'instructors': instructors,
-        'tas': tas
-    })
-
 
 @login_required
 def edit_profile(request):
@@ -252,3 +218,35 @@ def view_public_contacts(request):
     public_contacts = MyUser.objects.values('name', 'email', 'phone_number')
     context = {'public_contacts': public_contacts}
     return render(request, 'common/view_public_contacts.html', context)
+
+def course_assignment(request):
+    courses = MyCourse.objects.prefetch_related('tas').select_related('instructor')
+    instructors = MyUser.objects.filter(role='Instructor')
+    tas = MyUser.objects.filter(role='TA')
+
+    if request.method == 'POST':
+        form = CourseAssignmentForm(request.POST)
+        if form.is_valid():
+            course = form.cleaned_data['course']
+            instructor = form.cleaned_data['instructor']
+            tas = form.cleaned_data['tas']
+
+            course.instructor = instructor
+            course.tas.set(tas)
+            course.save()
+
+            messages.success(request, 'Course assignment updated successfully!')
+            return redirect('course_assignment')
+    else:
+        form = CourseAssignmentForm()
+
+    return render(
+        request,
+        'admin/course_assignment.html',
+        {
+            'form': form,
+            'courses': courses,
+            'instructors': instructors,
+            'tas': tas,
+        }
+    )
