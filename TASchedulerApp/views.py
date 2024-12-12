@@ -198,9 +198,11 @@ def edit_profile(request):
         home_address = request.POST.get('home_address', user.home_address)
         phone_number = request.POST.get('phone_number', user.phone_number)
         password = request.POST.get('password', None)
+        office_hours = request.POST.get('office_hours', user.office_hours)
+        office_location = request.POST.get('office_location', user.office_location)
 
         # Call the service function to update the user profile
-        update_user_profile(request, user, name, home_address, phone_number, password)
+        update_user_profile(request, user, name, home_address, phone_number, password, office_hours, office_location)
 
         messages.success(request, "Your profile has been updated successfully!")
         return redirect('edit_profile')
@@ -215,7 +217,7 @@ def view_ta_assignments(request):
 
 @login_required
 def view_public_contacts(request):
-    public_contacts = MyUser.objects.values('name', 'email', 'phone_number')
+    public_contacts = MyUser.objects.values('name', 'email', 'phone_number', 'office_hours', 'office_location')
     context = {'public_contacts': public_contacts}
     return render(request, 'common/view_public_contacts.html', context)
 
