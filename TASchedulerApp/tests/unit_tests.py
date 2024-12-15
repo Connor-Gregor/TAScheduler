@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from TASchedulerApp.models import MyCourse, MyUser, Notification
 from unittest.mock import Mock, patch
 from django.contrib.auth import get_user_model
@@ -50,9 +50,18 @@ class AuthServiceLoginUnitTests(TestCase):
 class CourseServiceTest(TestCase):
 
     def setUp(self):
+        self.user_data = {
+            'name': 'Boyland',
+            'email': 'test1@testing.com',
+            'password': '123',
+            'role': 'Instructor',
+            'office_hours': '8:00 AM',
+            'office_location': 'Room 100'
+        }
+        self.instructor = MyUser.objects.create_user(**self.user_data)
         self.course = MyCourse.objects.create(
             name="CS 351",
-            instructor="Boyland",
+            instructor=self.instructor,
             room="Room 200",
             time="10:00 AM"
         )
@@ -64,10 +73,19 @@ class CourseServiceTest(TestCase):
         self.assertEqual(self.course.name, 'Chang')
 
     def test_edit_course_instructor(self):
-        new_data = {'new_instructor': 'John'}
+        self.user_data = {
+            'name': 'John1',
+            'email': 'test2@testing.com',
+            'password': '1234',
+            'role': 'Instructor',
+            'office_hours': '8:00 AM',
+            'office_location': 'Room 100'
+        }
+        self.instructor1 = MyUser.objects.create_user(**self.user_data)
+        new_data = {'new_instructor': self.instructor1}
         CourseService.edit_course(self.course.id, new_data)
         self.course.refresh_from_db()
-        self.assertEqual(self.course.instructor, 'John')
+        self.assertEqual(self.course.instructor, self.instructor1)
 
     def test_edit_course_room(self):
         new_data = {'new_room': 'Room 202'}
@@ -82,16 +100,25 @@ class CourseServiceTest(TestCase):
         self.assertEqual(self.course.time, '2:00 PM')
 
     def test_edit_multiple_fields(self):
+        self.user_data = {
+            'name': 'Boyland2',
+            'email': 'test2@testing.com',
+            'password': '123',
+            'role': 'Instructor',
+            'office_hours': '8:00 AM',
+            'office_location': 'Room 100'
+        }
+        self.instructor1 = MyUser.objects.create_user(**self.user_data)
         new_data = {
             'new_name': 'John',
-            'new_instructor': 'Boyland',
+            'new_instructor': self.instructor1,
             'new_room': 'Room 303',
             'new_time': '4:00 PM'
         }
         CourseService.edit_course(self.course.id, new_data)
         self.course.refresh_from_db()
         self.assertEqual(self.course.name, 'John')
-        self.assertEqual(self.course.instructor, 'Boyland')
+        self.assertEqual(self.course.instructor, self.instructor1)
         self.assertEqual(self.course.room, 'Room 303')
         self.assertEqual(self.course.time, '4:00 PM')
 
@@ -388,3 +415,226 @@ class EditUserTests(TestCase):
         self.assertEqual(self.user.password, old_data['old_password'])
         self.assertEqual(self.user.email, old_data['old_email'])
         self.assertEqual(self.user.role, old_data['old_role'])
+
+class UpdateUserProfileTestCase(TestCase):
+
+    def setUp(self):
+        # Create a user to test on
+        self.user = MyUser.objects.create_user(
+            email='test@example.com',
+            password='oldpassword',
+            name='Test User',
+            home_address='123 Main St',
+            phone_number='1234567890',
+            office_hours='9-5',
+            office_location='Room 101'
+        )
+
+        # Create a request object
+        self.factory = RequestFactory()
+        self.request = self.factory.post('/update-profile/', {
+            'name': 'Updated User',
+            'home_address': '456 Elm St',
+            'phone_number': '0987654321',
+            'office_hours': '10-6',
+            'office_location': 'Room 102',
+            'password': 'newpassword'
+        })
+
+        # Set the user as the logged-in user for the request
+        self.request.user = self.user
+
+    def test_update_name(self):
+        # Test if the name is updated
+        updated_name = 'Updated User'
+        update_user_profile(self.request, self.user, updated_name, self.user.home_address, self.user.phone_number, '', self.user.office_hours, self.user.office_location)
+
+        # Reload the user from the database
+        self.user.refresh_from_db()
+
+        self.assertEqual(self.user.name, updated_name)
+
+    def test_update_home_address(self):
+        # Test if the home_address is updated
+        updated_address = '456 Elm St'
+        update_user_profile(self.request, self.user, self.user.name, updated_address, self.user.phone_number, '', self.user.office_hours, self.user.office_location)
+
+        # Reload the user from the database
+        self.user.refresh_from_db()
+
+        self.assertEqual(self.user.home_address, updated_address)
+
+    def test_update_phone_number(self):
+        # Test if the phone_number is updated
+        updated_phone = '0987654321'
+        update_user_profile(self.request, self.user, self.user.name, self.user.home_address, updated_phone, '', self.user.office_hours, self.user.office_location)
+
+        # Reload the user from the database
+        self.user.refresh_from_db()
+
+        self.assertEqual(self.user.phone_number, updated_phone)
+
+    def test_update_office_hours(self):
+        # Test if office_hours are updated
+        updated_hours = '10-6'
+        update_user_profile(self.request, self.user, self.user.name, self.user.home_address, self.user.phone_number, '', updated_hours, self.user.office_location)
+
+        # Reload the user from the database
+        self.user.refresh_from_db()
+
+        self.assertEqual(self.user.office_hours, updated_hours)
+
+    def test_update_office_location(self):
+        # Test if office_location is updated
+        updated_location = 'Room 102'
+        update_user_profile(self.request, self.user, self.user.name, self.user.home_address, self.user.phone_number, '', self.user.office_hours, updated_location)
+
+        # Reload the user from the database
+        self.user.refresh_from_db()
+
+        self.assertEqual(self.user.office_location, updated_location)
+
+
+    @patch('TASchedulerApp.service.edit_user_service.update_session_auth_hash')  # Mock update_session_auth_hash
+    def test_update_session_auth_hash_called_on_password_change(self, mock_update_session_auth_hash):
+        # Call the method with a new password
+        update_user_profile(self.request, self.user, self.user.name, self.user.home_address, self.user.phone_number,
+                            'newpassword', self.user.office_hours, self.user.office_location)
+
+        # Check if update_session_auth_hash was called
+        mock_update_session_auth_hash.assert_called_once_with(self.request, self.user)
+
+class CourseServiceAssignTests(TestCase):
+    def setUp(self):
+
+        self.user_data = {
+            'name': 'test1',
+            'email': 'test1@testing.com',
+            'password': '123',
+            'role': 'TA',
+            'office_hours': '10:00 AM',
+            'office_location': 'Room 101'
+        }
+        self.user_data2 = {
+            'name': 'test2',
+            'email': 'test2@testing.com',
+            'password': '123',
+            'role': 'Instructor',
+            'office_hours': '10:00 AM',
+            'office_location': 'Room 101'
+        }
+        self.user = MyUser.objects.create_user(**self.user_data)
+        self.instructor = MyUser.objects.create_user(**self.user_data2)
+        self.course = MyCourse.objects.create(
+            name="CS 351",
+            instructor=self.instructor,
+            room="Room 200",
+            time="10:00 AM"
+        )
+
+        self.mock_request = Mock()
+
+    def test_no_course(self):
+        result = assign_instructor_and_tas(course_id=9999, instructor_id=self.instructor.id, ta_id=self.user.id)
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], "Course not found.")
+
+    def test_no_instructor(self):
+        result = assign_instructor_and_tas(course_id=self.course.id, instructor_id=9999, ta_id=self.user.id)
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], "Instructor or TA not found.")
+
+    def test_no_instructor_and_TA(self):
+        result = assign_instructor_and_tas(course_id=self.course.id, instructor_id=9999, ta_id=9999)
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], "Instructor or TA not found.")
+
+    def test_no_course_and_TA(self):
+        result = assign_instructor_and_tas(course_id=9999, instructor_id=self.instructor.id, ta_id=9999)
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], "Course not found.")
+
+    def test_no_course_and_Instructor(self):
+        result = assign_instructor_and_tas(course_id=9999, instructor_id=9999, ta_id=self.user.id)
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], "Course not found.")
+
+    def test_no_anything(self):
+        result = assign_instructor_and_tas(course_id=9999, instructor_id=9999, ta_id=9999)
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], "Course not found.")
+
+    def test_no_ta(self):
+        result = assign_instructor_and_tas(course_id=self.course.id, instructor_id=self.instructor.id,ta_id=9999)
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], "Instructor or TA not found.")
+
+    def test_error_course(self):
+        result = assign_instructor_and_tas(course_id="hello", instructor_id=self.instructor.id,ta_id=self.user.id)
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], "Field 'id' expected a number but got 'hello'.")
+
+    def test_error_instructor(self):
+        result = assign_instructor_and_tas(course_id=self.course.id, instructor_id="hi",ta_id=self.user.id)
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], "Field 'id' expected a number but got 'hi'.")
+
+    def test_error_ta(self):
+        result = assign_instructor_and_tas(course_id=self.course.id, instructor_id=self.instructor.id,ta_id="bye")
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], "Field 'id' expected a number but got 'bye'.")
+
+    def test_error_course_no_ta(self):
+        result = assign_instructor_and_tas(course_id="hello", instructor_id=self.instructor.id,ta_id=9999)
+        self.assertEqual(result['message'], "Field 'id' expected a number but got 'hello'.")
+
+    def test_error_course_no_instructor(self):
+        result = assign_instructor_and_tas(course_id="hello", instructor_id=9999, ta_id=self.user.id)
+        self.assertEqual(result['message'], "Field 'id' expected a number but got 'hello'.")
+
+    def test_error_ta_no_course(self):
+        result = assign_instructor_and_tas(course_id=9999, instructor_id=self.instructor.id, ta_id="bye")
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], "Course not found.")
+
+    def test_error_ta_no_instructor(self):
+        result = assign_instructor_and_tas(course_id=self.course.id, instructor_id=9999, ta_id="bye")
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], "Instructor or TA not found.")
+
+    def test_error_instructor_no_ta(self):
+        result = assign_instructor_and_tas(course_id=self.course.id, instructor_id="hi", ta_id=9999)
+        self.assertEqual(result['message'], "Field 'id' expected a number but got 'hi'.")
+
+    def test_error_instructor_no_course(self):
+        result = assign_instructor_and_tas(course_id=9999, instructor_id="hi", ta_id=self.user.id)
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], "Course not found.")
+
+    def test_error_instructor_error_course(self):
+        result = assign_instructor_and_tas(course_id="hello", instructor_id="hi", ta_id=self.user.id)
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], "Field 'id' expected a number but got 'hello'.")
+
+    def test_error_ta_error_course(self):
+        result = assign_instructor_and_tas(course_id="hello", instructor_id=self.instructor.id, ta_id="bye")
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], "Field 'id' expected a number but got 'hello'.")
+
+    def test_error_ta_error_course_no_instructor(self):
+        result = assign_instructor_and_tas(course_id="hello", instructor_id=9999, ta_id="bye")
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], "Field 'id' expected a number but got 'hello'.")
+
+    def test_error_ta_error_instructor(self):
+        result = assign_instructor_and_tas(course_id=self.course.id, instructor_id="hi", ta_id="bye")
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], "Field 'id' expected a number but got 'hi'.")
+
+    def test_successful_assignment(self):
+        result = assign_instructor_and_tas(course_id=self.course.id, instructor_id=self.instructor.id,ta_id=self.user.id)
+        self.assertTrue(result['success'])
+        self.assertEqual(result['message'], "Assignments updated successfully.")
+        self.course.refresh_from_db()
+        self.assertEqual(self.course.instructor.id, self.instructor.id)
+        self.assertIn(self.user, self.course.tas.all())
