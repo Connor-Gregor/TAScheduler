@@ -217,14 +217,15 @@
                     <a href="{% url 'course_management' %}">Course Management</a>
                     <a href="{% url 'account_management' %}">Account Management</a>
                 </div>
-                
-                <!-- Third Row: View Public Contacts -->
-                <div>
-                    <a href="{% url 'view_public_contacts' %}">View Public Contacts</a>
-                </div>
+
             </div>
         </section>
         {% endif %}
+        <!-- Third Row: View Public Contacts -->
+        <div class="admin-links">
+            <a href="{% url 'view_public_contacts' %}">View Public Contacts</a>
+            <a href="{% url 'view_ta_assignments' %}">View All TA Assignments</a>
+        </div>
     </div>
 
     <!-- Footer -->

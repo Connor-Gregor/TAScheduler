@@ -149,20 +149,16 @@ class DeleteUser(LoginRequiredMixin, View):
 class EditCourse(LoginRequiredMixin, View):
     def get(self, request, course_id):
         course = get_object_or_404(MyCourse, id=course_id)
-        return render(request, 'admin/edit_course.html', {'course': course})
+        form = CourseForm(instance=course)  # Assuming you have a CourseForm
+        return render(request, 'admin/edit_course.html', {'form': form})
 
     def post(self, request, course_id):
-        new_data = {
-            'new_name': request.POST.get('newName'),
-            'new_instructor': request.POST.get('newInstructor'),
-            'new_room': request.POST.get('newRoom'),
-            'new_time': request.POST.get('newTime'),
-        }
-        try:
-            CourseService.edit_course(course_id, {k: v for k, v in new_data.items() if v})
+        course = get_object_or_404(MyCourse, id=course_id)
+        form = CourseForm(request.POST, instance=course)
+        if form.is_valid():
+            form.save()
             return redirect('course_management')
-        except Exception as e:
-            return render(request, 'admin/edit_course.html', {'error': str(e)})
+        return render(request, 'admin/edit_course.html', {'form': form})
 
 def delete_course(request, course_id):
     if request.method == "POST":
