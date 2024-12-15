@@ -6,26 +6,30 @@
     <title>Edit Profile</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f9fc;
             margin: 0;
             padding: 0;
-            color: #333;
+            color: #2c3e50;
         }
 
         .container {
-            width: 60%;
-            max-width: 600px;
+            width: 70%;
+            max-width: 700px;
             margin: 50px auto;
-            padding: 20px;
+            padding: 30px;
             background-color: white;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
         }
 
         h1 {
             text-align: center;
-            color: #444;
+            font-size: 2.5em;
+            color: #34495e;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #16a085;
+            padding-bottom: 10px;
         }
 
         form {
@@ -34,44 +38,49 @@
         }
 
         label {
-            margin-top: 10px;
             font-weight: bold;
+            margin-top: 15px;
+            color: #34495e;
         }
 
         input[type="text"],
         input[type="password"] {
-            width: calc(100% - 20px);
-            padding: 10px;
+            width: 100%;
+            padding: 12px;
             margin-top: 5px;
-            border-radius: 5px;
+            border-radius: 8px;
             border: 1px solid #ccc;
+            font-size: 1em;
         }
 
         button {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #007BFF;
+            margin-top: 30px;
+            padding: 12px 20px;
+            background-color: #3498db;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s ease-in-out;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #2980b9;
+            transform: translateY(-3px);
         }
 
         a {
             text-align: center;
             display: block;
-            margin-top: 20px;
+            margin-top: 30px;
             text-decoration: none;
-            color: #007BFF;
+            color: #16a085;
+            font-weight: bold;
         }
 
         a:hover {
-            color: #0056b3;
+            color: #138a72;
         }
     </style>
 </head>
@@ -101,7 +110,7 @@
 
             <button type="submit">Save Changes</button>
 
-            <a href="{% url 'profile' %}">Back to profile</a>
+            <a href="{% url 'profile' %}">Back to Profile</a>
         </form>
     </div>
 </body>

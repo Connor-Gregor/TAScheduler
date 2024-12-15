@@ -6,44 +6,75 @@
     <title>Profile</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f9fc;
             margin: 0;
             padding: 0;
-            color: #333;
+            color: #2c3e50;
         }
 
         .container {
-            width: 60%;
-            max-width: 600px;
+            width: 70%;
+            max-width: 800px;
             margin: 50px auto;
-            padding: 20px;
+            padding: 30px;
             background-color: white;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
         }
 
         h1 {
             text-align: center;
-            color: #444;
+            font-size: 2.5em;
+            color: #34495e;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #16a085;
+            padding-bottom: 10px;
         }
 
         p {
-            font-size: 16px;
-            line-height: 1.6;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin: 15px 0;
+        }
+
+        p strong {
+            color: #16a085;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
         }
 
         a {
-            display: block;
-            margin-top: 20px;
+            padding: 12px 20px;
             text-align: center;
             text-decoration: none;
-            color: #007BFF;
+            color: white;
             font-weight: bold;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
-        a:hover {
-            color: #0056b3;
+        a.edit {
+            background-color: #3498db;
+        }
+
+        a.edit:hover {
+            background-color: #2980b9;
+            transform: translateY(-3px);
+        }
+
+        a.back {
+            background-color: #16a085;
+        }
+
+        a.back:hover {
+            background-color: #138a72;
+            transform: translateY(-3px);
         }
     </style>
 </head>
@@ -58,8 +89,10 @@
         <p><strong>Office Hours:</strong> {{ user.office_hours }}</p>
         <p><strong>Office Location:</strong> {{ user.office_location }}</p>
 
-        <a href="{% url 'edit_profile' %}">Edit Information</a>
-        <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+        <div class="actions">
+            <a href="{% url 'edit_profile' %}" class="edit">Edit Information</a>
+            <a href="{% url 'dashboard' %}" class="back">Back to Dashboard</a>
+        </div>
     </div>
 </body>
 </html>
