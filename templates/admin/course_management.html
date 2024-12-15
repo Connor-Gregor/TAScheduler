@@ -150,6 +150,7 @@
                     <td>{{ course.room }}</td>
                     <td>{{ course.time }}</td>
                     <td class="actions">
+                        <a href="{% url 'edit_course' course.id %}" class="btn btn-warning">Edit</a>
                         <!-- Delete Button -->
                         <form method="POST" action="{% url 'delete_course' course.id %}" style="display: inline;">
                             {% csrf_token %}
