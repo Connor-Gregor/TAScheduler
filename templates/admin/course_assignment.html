@@ -5,7 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Assignment</title>
     <style>
-        /* Add your CSS styling here */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 20px;
+            text-decoration: none;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        form .btn.assign {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -53,14 +119,14 @@
         </table>
 
         <!-- Assignment Form -->
-        <form method="post" style="margin-top: 20px;">
+        <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn assign">Assign</button>
         </form>
 
         <!-- Back to Dashboard Button -->
-        <a href="{% url 'dashboard' %}" class="btn" style="margin-top: 20px;">Back to Dashboard</a>
+        <a href="{% url 'dashboard' %}" class="btn">Back to Dashboard</a>
     </div>
 </body>
 </html>

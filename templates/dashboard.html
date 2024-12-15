@@ -5,26 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            background: #f5f7fa; 
-            color: #333; 
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         .header {
-            background-color: #34495e; 
+            background: linear-gradient(90deg, #34495e, #2c3e50);
             color: white;
-            padding: 20px;
             text-align: center;
+            padding: 20px;
             border-bottom: 4px solid #16a085;
         }
 
         .header h1 {
-            margin: 0;
-            font-size: 2.5em;
+            font-size: 2.8em;
             font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         nav {
@@ -32,99 +39,127 @@
         }
 
         nav a {
-            color: #ecf0f1; 
+            color: #ecf0f1;
             text-decoration: none;
-            padding: 8px 15px;
-            background-color: #16a085; 
+            margin: 0 10px;
+            padding: 10px 20px;
+            background-color: #16a085;
             border-radius: 5px;
-            margin-right: 15px;
-            font-size: 1.1em;
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
         }
 
         nav a:hover {
             background-color: #1abc9c;
-            transform: translateY(-2px); 
+            transform: translateY(-3px);
         }
 
+        /* Main Content */
         .content {
-            padding: 30px;
-            max-width: 1000px;
+            flex-grow: 1;
+            padding: 20px;
+            max-width: 1200px;
             margin: 20px auto;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         h2 {
             text-align: center;
             margin-bottom: 20px;
             color: #34495e;
+            text-transform: uppercase;
+            font-size: 1.8em;
         }
 
+        /* Box Styling for Courses and Admin Tools */
+        .box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        /* Table Styles */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin-bottom: 20px;
         }
 
         th, td {
-            padding: 15px 20px;
-            text-align: center;
+            padding: 15px;
             border: 1px solid #ddd;
+            text-align: center;
             font-size: 1.1em;
         }
 
         th {
             background-color: #16a085;
-            color: #fff;
+            color: white;
         }
 
-        td {
+        tr:nth-child(even) {
             background-color: #f9f9f9;
         }
 
-        td:nth-child(even) {
-            background-color: #eef2f7;
-        }
-
         td a {
-            display: inline-block;
-            padding: 8px 15px;
+            padding: 8px 12px;
             background-color: #3498db;
             color: white;
             text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            border-radius: 4px;
+            transition: all 0.3s ease;
         }
 
         td a:hover {
             background-color: #2980b9;
-            transform: translateY(-2px); /* Slight hover effect */
+            transform: translateY(-2px);
         }
 
-        .admin-links table {
-            width: auto;
-            margin: 0 auto;
+        /* Admin Links */
+        .admin-links {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            margin: 20px 0;
         }
 
-        .admin-links td {
-            padding: 10px;
+        .admin-links div {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
         }
 
+        .admin-links a {
+            padding: 12px 20px;
+            background: #2ecc71;
+            color: white;
+            font-size: 1.1em;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .admin-links a:hover {
+            background: #27ae60;
+            transform: scale(1.05);
+        }
+
+        /* Footer Styling */
         .footer {
+            background: #34495e;
+            color: white;
             text-align: center;
             padding: 15px;
-            background-color: #34495e;
-            color: white;
-            margin-top: 20px;
-            border-radius: 0 0 10px 10px;
+            margin-top: auto;
+            border-top: 4px solid #16a085;
         }
 
         .footer a {
             color: #1abc9c;
             text-decoration: none;
-            margin: 0 5px;
+            font-weight: bold;
         }
 
         .footer a:hover {
@@ -145,51 +180,56 @@
 
     <!-- Main Content -->
     <div class="content">
-        <!-- Courses Section -->
-        <h2>Courses</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Course</th>
-                    <th>Instructor</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for course in courses %}
-                <tr>
-                    <td>{{ course.name }}</td>
-                    <td>{{ course.instructor }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <!-- Courses Box -->
+        <section class="box">
+            <h2>Courses</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Course</th>
+                        <th>Instructor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for course in courses %}
+                    <tr>
+                        <td>{{ course.name }}</td>
+                        <td>{{ course.instructor }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
 
-        <!-- Management Links (Administrator Only) -->
+        <!-- Administrative Tools Box (Visible only for Admin) -->
         {% if user.role == 'Administrator' %}
-        <h2>Administrative Tools</h2>
-        <div class="admin-links">
-            <table>
-                <tr>
-                    <td><a href="{% url 'course_assignment' %}">Course Assignment</a></td>
-                    <td><a href="{# {% url 'ta_assignment' %} #}">TA Assignment</a></td>
-                </tr>
-                <tr>
-                    <td><a href="{% url 'course_management' %}">Course Management</a></td>
-                    <td><a href="{% url 'account_management' %}">Account Management</a></td>
-                </tr>
-            </table>
-        </div>
+        <section class="box">
+            <h2>Administrative Tools</h2>
+            <div class="admin-links">
+                <!-- First Row: Course Assignment and View TA Assignments -->
+                <div>
+                    <a href="{% url 'course_assignment' %}">Course Assignment</a>
+                    <a href="{% url 'view_ta_assignments' %}">View TA Assignments</a>
+                </div>
+                
+                <!-- Second Row: Course Management and Account Management -->
+                <div>
+                    <a href="{% url 'course_management' %}">Course Management</a>
+                    <a href="{% url 'account_management' %}">Account Management</a>
+                </div>
+                
+                <!-- Third Row: View Public Contacts -->
+                <div>
+                    <a href="{% url 'view_public_contacts' %}">View Public Contacts</a>
+                </div>
+            </div>
+        </section>
         {% endif %}
-
-        <!-- only has the admin-links class so that its centered and padded right -->
-        <div class="admin-links">
-            <table>
-                <tr>
-                    <td><a href="{% url 'view_ta_assignments' %}">View all TA Assignments</a></td>
-                    <td><a href="{% url 'view_public_contacts' %}">View public contact information</a></td>
-                </tr>
-            </table>
-        </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 University Management System. All Rights Reserved. <a href="#">Privacy Policy</a></p>
+    </footer>
 </body>
 </html>
