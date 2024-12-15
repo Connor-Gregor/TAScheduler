@@ -2,40 +2,107 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 60%;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            text-align: center;
+            display: block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        a:hover {
+            color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>Edit Profile</h1>
-    <form method="POST" action="{% url 'edit_profile' %}">
-        {% csrf_token %}
+    <div class="container">
+        <h1>Edit Profile</h1>
+        <form method="POST" action="{% url 'edit_profile' %}">
+            {% csrf_token %}
 
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" value="{{ user.name }}">
-        <br>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" value="{{ user.name }}">
 
-        <label for="home_address">Home Address:</label>
-        <textarea id="home_address" name="home_address" rows="3">{{ user.home_address }}</textarea>
-        <br>
+            <label for="home_address">Home Address:</label>
+            <input type="text" id="home_address" name="home_address" value="{{ user.home_address }}">
 
-        <label for="phone_number">Phone Number:</label>
-        <input type="text" id="phone_number" name="phone_number" value="{{ user.phone_number }}">
-        <br>
+            <label for="phone_number">Phone Number:</label>
+            <input type="text" id="phone_number" name="phone_number" value="{{ user.phone_number }}">
 
-        <label for="office_hours">Office Hours:</label>
-        <input type="text" id="office_hours" name="office_hours" value="{{ user.office_hours }}">
-        <br>
+            <label for="office_hours">Office Hours:</label>
+            <input type="text" id="office_hours" name="office_hours" value="{{ user.office_hours }}">
 
-        <label for="office_location">Office Location:</label>
-        <input type="text" id="office_location" name="office_location" value="{{ user.office_location }}">
-        <br>
+            <label for="office_location">Office Location:</label>
+            <input type="text" id="office_location" name="office_location" value="{{ user.office_location }}">
 
-        <label for="password">New Password:</label>
-        <input type="password" id="password" name="password">
-        <br>
+            <label for="password">New Password:</label>
+            <input type="password" id="password" name="password">
 
-        <button type="submit">Save Changes</button>
+            <button type="submit">Save Changes</button>
 
-        <a href="{% url 'profile' %}" style="display: block; margin-top: 20px;">Back to profile</a>
-    </form>
+            <a href="{% url 'profile' %}">Back to profile</a>
+        </form>
+    </div>
 </body>
 </html>
