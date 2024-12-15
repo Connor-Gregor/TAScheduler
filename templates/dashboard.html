@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <style>
-        /* Global Styles */
         * {
             margin: 0;
             padding: 0;
@@ -21,7 +20,6 @@
             min-height: 100vh;
         }
 
-        /* Header Styling */
         .header {
             background: linear-gradient(90deg, #34495e, #2c3e50);
             color: white;
@@ -62,9 +60,6 @@
             padding: 20px;
             max-width: 1200px;
             margin: 20px auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         h2 {
@@ -73,6 +68,15 @@
             color: #34495e;
             text-transform: uppercase;
             font-size: 1.8em;
+        }
+
+        /* Box Styling for Courses and Admin Tools */
+        .box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
 
         /* Table Styles */
@@ -115,10 +119,16 @@
         /* Admin Links */
         .admin-links {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
             margin: 20px 0;
+        }
+
+        .admin-links div {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
         }
 
         .admin-links a {
@@ -155,18 +165,6 @@
         .footer a:hover {
             color: #16a085;
         }
-        .admin-links {
-    display: flex;
-    flex-direction: column; /* Stack rows vertically */
-    gap: 20px; /* Add spacing between rows */
-    align-items: center; /* Center-align links within rows */
-}
-
-.admin-links div {
-    display: flex;
-    gap: 15px; /* Add spacing between links in the same row */
-    justify-content: center; /* Center the row content */
-}
     </style>
 </head>
 <body>
@@ -182,47 +180,51 @@
 
     <!-- Main Content -->
     <div class="content">
-        <h2>Courses</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Course</th>
-                    <th>Instructor</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for course in courses %}
-                <tr>
-                    <td>{{ course.name }}</td>
-                    <td>{{ course.instructor }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <!-- Courses Box -->
+        <section class="box">
+            <h2>Courses</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Course</th>
+                        <th>Instructor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for course in courses %}
+                    <tr>
+                        <td>{{ course.name }}</td>
+                        <td>{{ course.instructor }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
 
-        <!-- Administrative Tools Section -->
-{% if user.role == 'Administrator' %}
-<h2>Administrative Tools</h2>
-<div class="admin-links">
-    <!-- First Row: Course Assignment and Course Management -->
-    <div>
-        <a href="{% url 'course_assignment' %}">Course Assignment</a>
-    </div>
-    
-    <!-- Second Row: Account Management -->
-    <div>
-        <a href="{% url 'course_management' %}">Course Management</a>
-
-        <a href="{% url 'account_management' %}">Account Management</a>
-    </div>
-    
-    <!-- Third Row: View Links -->
-    <div>
-        <a href="{% url 'view_ta_assignments' %}">View TA Assignments</a>
-        <a href="{% url 'view_public_contacts' %}">View Public Contacts</a>
-    </div>
-</div>
-{% endif %}
+        <!-- Administrative Tools Box (Visible only for Admin) -->
+        {% if user.role == 'Administrator' %}
+        <section class="box">
+            <h2>Administrative Tools</h2>
+            <div class="admin-links">
+                <!-- First Row: Course Assignment and View TA Assignments -->
+                <div>
+                    <a href="{% url 'course_assignment' %}">Course Assignment</a>
+                    <a href="{% url 'view_ta_assignments' %}">View TA Assignments</a>
+                </div>
+                
+                <!-- Second Row: Course Management and Account Management -->
+                <div>
+                    <a href="{% url 'course_management' %}">Course Management</a>
+                    <a href="{% url 'account_management' %}">Account Management</a>
+                </div>
+                
+                <!-- Third Row: View Public Contacts -->
+                <div>
+                    <a href="{% url 'view_public_contacts' %}">View Public Contacts</a>
+                </div>
+            </div>
+        </section>
+        {% endif %}
     </div>
 
     <!-- Footer -->
