@@ -1,0 +1,18 @@
+<!-- templates/admin/create_lab_section.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Lab Section</title>
+</head>
+<body>
+    <h1>Create Lab Section</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Create Lab Section</button>
+    </form>
+
+    <a href="{% url 'course_management' %}">Back to Course Management</a>
+</body>
+</html>

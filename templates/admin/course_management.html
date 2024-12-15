@@ -158,6 +158,22 @@
                         </form>
                     </td>
                 </tr>
+                    <tr>
+        <td colspan="5">
+            <strong>Lab Sections:</strong>
+            <ul>
+                {% for lab in course.lab_sections.all %}
+                <li>
+                    {{ lab.name }} (Section: {{ lab.section }}) 
+                    - Instructor: {{ lab.instructor }} 
+                    - TA: {{ lab.ta }}
+                </li>
+                {% empty %}
+                <li>No lab sections assigned.</li>
+                {% endfor %}
+            </ul>
+        </td>
+    </tr>
                 {% empty %}
                 <tr>
                     <td colspan="5" style="text-align: center; font-style: italic; color: #888;">
@@ -170,6 +186,8 @@
 
         <!-- Create Course Button -->
         <a href="{% url 'create_course' %}" class="btn btn create">Create Course</a>
+        <!-- NEW: Create Lab Section Button -->
+        <a href="{% url 'create_lab_section' %}" class="btn btn create" style="margin-left: 10px;">Create Lab Section</a>
 
         <!-- Back to Dashboard Button -->
         <a href="{% url 'dashboard' %}" class="btn" style="margin-top: 20px;">Back to Dashboard</a>

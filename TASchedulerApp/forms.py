@@ -4,7 +4,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from .models import MyCourse, MyUser
-
+from .models import LabSection, MyCourse, MyUser
 
 class RegistrationForm(forms.ModelForm):
     ROLE_CHOICES = [
@@ -78,3 +78,17 @@ class CourseAssignmentForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple
     )
+
+
+class LabSectionForm(forms.ModelForm):
+    class Meta:
+        model = LabSection
+        fields = ['name', 'section', 'course', 'instructor', 'ta']
+        # 'course', 'instructor', and 'ta' fields can leverage
+        # limit_choices_to from the model, or you can filter them here too.
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Optionally, refine queryset if needed:
+        self.fields['instructor'].queryset = MyUser.objects.filter(role='Instructor')
+        self.fields['ta'].queryset = MyUser.objects.filter(role='TA')
