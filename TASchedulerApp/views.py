@@ -164,6 +164,12 @@ class EditCourse(LoginRequiredMixin, View):
         except Exception as e:
             return render(request, 'admin/edit_course.html', {'error': str(e)})
 
+def delete_course(request, course_id):
+    if request.method == "POST":
+        course = get_object_or_404(MyCourse, id=course_id)
+        course.delete()
+        messages.success(request, "Course deleted successfully.")
+        return redirect('course_management')
 
 class Notifications(LoginRequiredMixin, View):
     def get(self, request):

@@ -139,6 +139,7 @@
                     <th>Instructor</th>
                     <th>Room Number</th>
                     <th>Class Time</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -148,6 +149,13 @@
                     <td>{{ course.instructor }}</td>
                     <td>{{ course.room }}</td>
                     <td>{{ course.time }}</td>
+                    <td class="actions">
+                        <!-- Delete Button -->
+                        <form method="POST" action="{% url 'delete_course' course.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="button" class="btn btn-danger" onclick="confirmDeletion({{ course.id }})">Delete</button>
+                        </form>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
@@ -165,5 +173,29 @@
         <!-- Back to Dashboard Button -->
         <a href="{% url 'dashboard' %}" class="btn" style="margin-top: 20px;">Back to Dashboard</a>
     </div>
+
+    <!-- Confirmation -->
+    <div id="deleteModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
+    <div class="modal-content" style="background: #fff; padding: 20px; border-radius: 8px; text-align: center;">
+        <h4>Confirm Deletion</h4>
+        <p>Are you sure you want to delete this course?</p>
+        <form id="deleteForm" method="POST" style="margin-top: 20px;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        </form>
+    </div>
+</div>
+<script>
+        function confirmDeletion(courseId) {
+            const deleteForm = document.getElementById('deleteForm');
+            deleteForm.action = `/delete_course/${courseId}/`;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
