@@ -46,6 +46,7 @@ urlpatterns = [
     path('course-management/', views.CreateCourseView.as_view(), name='course_management'),
     path('create-course/', views.CreateCourse.as_view(), name='create_course'),
     path('edit-course/<int:course_id>/', views.EditCourse.as_view(), name='edit_course'),
+path('delete_course/<int:course_id>/', views.delete_course, name='delete_course'),
     path('edit-profile/', views.edit_profile, name='edit_profile'),
 
     path('ta-assignments/', views.view_ta_assignments, name='view_ta_assignments'),
