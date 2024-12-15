@@ -15,6 +15,9 @@ from .service.course_service import CourseService, assign_instructor_and_tas
 from .service.notification_service import NotificationService
 from .service.edit_user_service import update_user_profile
 
+from .forms import LabSectionForm
+from .decorators import role_required
+from .models import LabSection
 
 
 # Create your views here.
@@ -254,3 +257,18 @@ def course_assignment(request):
             'tas': tas,
         }
     )
+class CreateLabSectionView(LoginRequiredMixin, View):
+    @method_decorator(role_required(allowed_roles=['Administrator', 'Instructor']))
+    def get(self, request):
+        form = LabSectionForm()
+        return render(request, 'admin/create_lab_section.html', {'form': form})
+
+    @method_decorator(role_required(allowed_roles=['Administrator', 'Instructor']))
+    def post(self, request):
+        form = LabSectionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Lab section created successfully!")
+            return redirect('course_management')
+        else:
+            return render(request, 'admin/create_lab_section.html', {'form': form})
