@@ -2,19 +2,64 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 60%;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        a {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+
+        a:hover {
+            color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>Profile</h1>
-    <p><strong>Name:</strong> {{ user.name }}</p>
-    <p><strong>Email:</strong> {{ user.email }}</p>
-    <p><strong>Role:</strong> {{ user.role }}</p>
-    <p><strong>Home Address:</strong> {{ user.home_address }}</p>
-    <p><strong>Phone Number:</strong> {{ user.phone_number }}</p>
-    <p><strong>Office Hours:</strong> {{ user.office_hours }}</p>
-    <p><strong>Office Location:</strong> {{ user.office_location }}</p>
+    <div class="container">
+        <h1>Profile</h1>
+        <p><strong>Name:</strong> {{ user.name }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Role:</strong> {{ user.role }}</p>
+        <p><strong>Home Address:</strong> {{ user.home_address }}</p>
+        <p><strong>Phone Number:</strong> {{ user.phone_number }}</p>
+        <p><strong>Office Hours:</strong> {{ user.office_hours }}</p>
+        <p><strong>Office Location:</strong> {{ user.office_location }}</p>
 
-    <a href="{% url 'edit_profile' %}" style="display: block; margin-top: 20px;">Edit Information</a>
-    <a href="{% url 'dashboard' %}" style="display: block; margin-top: 10px;">Back to Dashboard</a>
+        <a href="{% url 'edit_profile' %}">Edit Information</a>
+        <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+    </div>
 </body>
 </html>
