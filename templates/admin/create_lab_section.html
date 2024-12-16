@@ -1,18 +1,73 @@
-<!-- templates/admin/create_lab_section.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Lab Section</title>
+ 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            margin-top: 60px;
+            max-width: 600px;
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 25px 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #343a40;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .btn-primary, .btn-secondary {
+            width: 48%;
+            font-size: 16px;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .form-label {
+            font-weight: bold;
+            color: #495057;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+        footer a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Create Lab Section</h1>
-
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Create Lab Section</button>
-    </form>
-
-    <a href="{% url 'course_management' %}">Back to Course Management</a>
+    <div class="container">
+        <h1>Create Lab Section</h1>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="btn-container">
+                <button type="submit" class="btn btn-primary">Create Lab Section</button>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+            </div>
+        </form>
+        <footer>
+            <a href="{% url 'course_management' %}">Back to Course Management</a>
+        </footer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
