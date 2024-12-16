@@ -134,17 +134,9 @@
             <button type="submit">Send Notification</button>
         </form>
 
-        <!-- Back to Notifications Link -->
-        <a href="{% url 'notifications' %}" class="back-link">Go back to notifications</a>
+        <!-- Back to Dashboard Link -->
+        <a href="{% url 'dashboard' %}" class="back-link">Go back to dashboard</a>
 
-        <!-- Error Messages -->
-        {% if messages %}
-            <div class="error-messages">
-                {% for message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
     </div>
 </body>
 </html>

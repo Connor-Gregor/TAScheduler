@@ -39,9 +39,22 @@ class Login(View):
 class Dashboard(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
+
+        # Determine courses based on role
+        if user.role == 'Instructor':
+            # Fetch courses where the user is the instructor
+            courses = user.courses.all()
+        elif user.role == 'TA':
+            # Fetch courses where the user is a TA
+            courses = user.ta_courses.all()
+        else:
+            # Administrators can view all courses
+            courses = MyCourse.objects.all()
+
         context = {
             'user': user,
-            'user_role': user.role  # Pass the user's role to the template
+            'user_role': user.role,
+            'courses': courses  # Pass the courses to the template
         }
         return render(request, 'dashboard.html', context)
 
