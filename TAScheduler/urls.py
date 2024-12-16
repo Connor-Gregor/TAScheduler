@@ -33,6 +33,7 @@ urlpatterns = [
     path('dashboard/', views.Dashboard.as_view(), name='dashboard'),
     # Common URLs (accessible by all roles)
     path('profile/', views.ProfileView.as_view(), name='profile'),
+    
     #path('notifications/', views.NotificationsView.as_view(), name='notifications'),
     path('notifications/', views.Notifications.as_view(), name='notifications'),
     path('send-notifications/', views.SendNotification.as_view(), name='send_notifications'),
@@ -46,9 +47,11 @@ urlpatterns = [
     path('course-management/', views.CreateCourseView.as_view(), name='course_management'),
     path('create-course/', views.CreateCourse.as_view(), name='create_course'),
     path('edit-course/<int:course_id>/', views.EditCourse.as_view(), name='edit_course'),
-path('delete_course/<int:course_id>/', views.delete_course, name='delete_course'),
+    path('delete_course/<int:course_id>/', views.delete_course, name='delete_course'),
     path('edit-profile/', views.edit_profile, name='edit_profile'),
-
+    
+    path('ta-profile/', views.TAProfileView.as_view(), name='ta_profile'),
+    path('edit-ta-profile/', views.edit_ta_profile, name='edit_ta_profile'),
     path('ta-assignments/', views.view_ta_assignments, name='view_ta_assignments'),
     path('public-contacts/', views.view_public_contacts, name='view_public_contacts'),
     #path('admin/create_account/', views.CreateAccountView.as_view(), name='create_account'),

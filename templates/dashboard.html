@@ -168,6 +168,19 @@
     </style>
 </head>
 <body>
+    {% if user.role == 'TA' %}
+    <!-- Header -->
+    <header class="header">
+        <h1>Dashboard</h1>
+        <nav>
+            <a href="{% url 'ta_profile' %}">Profile</a>
+            <a href="{% url 'notifications' %}">Notifications</a>
+            <a href="{% url 'login' %}">Log-out</a>
+        </nav>
+    </header>
+    {% endif %}
+
+    {% if user.role != 'TA' %}
     <!-- Header -->
     <header class="header">
         <h1>Dashboard</h1>
@@ -177,6 +190,7 @@
             <a href="{% url 'login' %}">Log-out</a>
         </nav>
     </header>
+    {% endif %}
 
     <!-- Main Content -->
     <div class="content">
