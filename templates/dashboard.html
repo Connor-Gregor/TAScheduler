@@ -219,9 +219,10 @@
         <section class="box">
             <h2>Administrative Tools</h2>
             <div class="admin-links">
-                <!-- First Row: Course Assignment and View TA Assignments -->
+                <!-- First Row: Course Assignment and TAAssignments -->
                 <div>
                     <a href="{% url 'course_assignment' %}">Course Assignment</a>
+                    <a href="{% url 'assign_ta_to_lab' %}" class="btn btn-primary">TA Assignment</a>
                 </div>
                 
                 <!-- Second Row: Course Management and Account Management -->
@@ -229,10 +230,19 @@
                     <a href="{% url 'course_management' %}">Course Management</a>
                     <a href="{% url 'account_management' %}">Account Management</a>
                 </div>
-
             </div>
         </section>
         {% endif %}
+        
+        {% if user.role == 'Instructor' %}
+        <section class="box">
+            <h2>Instructor Tools</h2>
+            <div class="admin-links">
+                <a href="{% url 'assign_ta_to_lab' %}" class="btn btn-primary">Assign TA to Lab Section</a>
+            </div>
+        </section>
+        {% endif %}
+        
         <!-- Third Row: View Public Contacts -->
         <div class="admin-links">
             <a href="{% url 'view_public_contacts' %}">View Public Contacts</a>

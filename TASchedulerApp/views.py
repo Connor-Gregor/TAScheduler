@@ -6,7 +6,7 @@ from django.utils.decorators import method_decorator
 from .decorators import role_required
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required, permission_required
 
 from .models import MyCourse, MyUser, Notification
 from .service.account_service import AccountService
@@ -313,3 +313,20 @@ class CreateLabSectionView(LoginRequiredMixin, View):
             return redirect('course_management')
         else:
             return render(request, 'admin/create_lab_section.html', {'form': form})
+
+@login_required
+def assign_ta_to_lab(request):
+    if request.method == "POST":
+        lab_section_id = request.POST.get("lab_section_id")
+        ta_id = request.POST.get("ta_id")
+
+        lab_section = get_object_or_404(LabSection, id=lab_section_id)
+        ta = get_object_or_404(MyUser, id=ta_id, role='TA')
+        lab_section.ta = ta
+        lab_section.save()
+
+        return redirect('assign_ta_to_lab')
+
+    lab_sections = LabSection.objects.all()
+    tas = MyUser.objects.filter(role='TA')
+    return render(request, 'admin/assign_ta_to_lab.html', {'lab_sections': lab_sections, 'tas': tas})

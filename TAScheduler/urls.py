@@ -19,7 +19,7 @@ from django.contrib.auth.views import LogoutView
 from django.urls import path
 
 from TASchedulerApp import views
-from TASchedulerApp.views import course_assignment
+from TASchedulerApp.views import course_assignment, assign_ta_to_lab
 from TASchedulerApp.views import CreateLabSectionView
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -72,6 +72,7 @@ urlpatterns = [
     #path('instructor/contact_tas/', views.ContactTAsView.as_view(), name='contact_tas'),
     #path('instructor/send_notifications/', views.SendNotificationsView.as_view(), name='send_notifications_instructor'),
     path('create-lab-section/', CreateLabSectionView.as_view(), name='create_lab_section'),
+    path('assign-ta-to-lab/', assign_ta_to_lab, name='assign_ta_to_lab'),
     # TA URLs
     #path('ta/edit_contact_info/', views.EditContactInfoView.as_view(), name='edit_contact_info'),
     #path('ta/view_ta_assignments/', views.ViewTAAssignmentsTAView.as_view(), name='view_ta_assignments_ta'),

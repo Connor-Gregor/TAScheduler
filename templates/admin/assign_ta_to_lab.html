@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign TA to Lab Section</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        form {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        select, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 1em;
+        }
+
+        button {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #27ae60;
+        }
+
+        .back-button {
+            display: block;
+            margin: 20px auto;
+            text-align: center;
+            text-decoration: none;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            width: fit-content;
+        }
+
+        .back-button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Assign TA to Lab Section</h1>
+
+    <!-- Table Displaying Current Assignments -->
+    <h2>Current TA Assignments</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Lab Section</th>
+                <th>Course</th>
+                <th>Assigned TA</th>
+                <th>Skills</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for section in lab_sections %}
+            <tr>
+                <td>{{ section.name }} ({{ section.section }})</td>
+                <td>{{ section.course.name }}</td>
+                <td>{% if section.ta %} {{ section.ta.name }} {% else %} Unassigned {% endif %}</td>
+                <td>{% if section.ta %} {{ section.ta.skills }} {% else %} - {% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Form for Assigning TA -->
+    <form method="post">
+        {% csrf_token %}
+        <label for="lab_section_id">Select Lab Section:</label>
+        <select name="lab_section_id" id="lab_section_id">
+            {% for section in lab_sections %}
+            <option value="{{ section.id }}">{{ section.name }} ({{ section.course.name }})</option>
+            {% endfor %}
+        </select>
+
+        <label for="ta_id">Select TA:</label>
+        <select name="ta_id" id="ta_id">
+            {% for ta in tas %}
+            <option value="{{ ta.id }}">{{ ta.name }} (Skills: {{ ta.skills }})</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Assign TA</button>
+    </form>
+
+    <!-- Back to Dashboard Button -->
+    <a href="{% url 'dashboard' %}" class="back-button">Back to Dashboard</a>
+</body>
+</html>
