@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f9fc;
+            margin: 0;
+            padding: 0;
+            color: #2c3e50;
+        }
+
+        .container {
+            width: 70%;
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #34495e;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #16a085;
+            padding-bottom: 10px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 15px;
+            color: #34495e;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+        }
+
+        button {
+            margin-top: 30px;
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-3px);
+        }
+
+        a {
+            text-align: center;
+            display: block;
+            margin-top: 30px;
+            text-decoration: none;
+            color: #16a085;
+            font-weight: bold;
+        }
+
+        a:hover {
+            color: #138a72;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Profile</h1>
+        <form method="POST" action="{% url 'edit_ta_profile' %}">
+            {% csrf_token %}
+
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" value="{{ user.name }}">
+
+            <label for="home_address">Home Address:</label>
+            <input type="text" id="home_address" name="home_address" value="{{ user.home_address }}">
+
+            <label for="phone_number">Phone Number:</label>
+            <input type="text" id="phone_number" name="phone_number" value="{{ user.phone_number }}">
+
+            <label for="office_hours">Office Hours:</label>
+            <input type="text" id="office_hours" name="office_hours" value="{{ user.office_hours }}">
+
+            <label for="office_location">Office Location:</label>
+            <input type="text" id="office_location" name="office_location" value="{{ user.office_location }}">
+
+            <label for="skills">Skills:</label>
+            <input type="text" id="skills" name="skills" value="{{ user.skills }}">
+
+            <label for="password">New Password:</label>
+            <input type="password" id="password" name="password">
+
+            <button type="submit">Save Changes</button>
+
+            <a href="{% url 'ta_profile' %}">Back to Profile</a>
+        </form>
+    </div>
+</body>
+</html>

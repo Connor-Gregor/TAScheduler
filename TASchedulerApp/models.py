@@ -36,6 +36,7 @@ class MyUser(AbstractBaseUser):
     phone_number = models.CharField(max_length=15, default='')
     office_hours = models.TextField(default='')
     office_location = models.CharField(max_length=50, default='')
+    skills = models.TextField(default='')
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)

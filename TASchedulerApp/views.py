@@ -13,7 +13,7 @@ from .service.account_service import AccountService
 from .service.auth_service import AuthService
 from .service.course_service import CourseService, assign_instructor_and_tas
 from .service.notification_service import NotificationService
-from .service.edit_user_service import update_user_profile
+from .service.edit_user_service import update_ta_profile, update_user_profile
 
 from .forms import LabSectionForm
 from .decorators import role_required
@@ -102,6 +102,14 @@ class ProfileView(LoginRequiredMixin, View):
 
     def post(self, request):
         # Handle form submissions to update profile information
+        pass
+    
+class TAProfileView(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        return render(request, 'ta/ta_profile.html', {'user': user})
+
+    def post(self, request):
         pass
 
 
@@ -213,6 +221,26 @@ def edit_profile(request):
         return redirect('edit_profile')
 
     return render(request, 'common/edit_profile.html', {'user': user})
+
+@login_required
+def edit_ta_profile(request):
+    user = request.user
+    if request.method == 'POST':
+        name = request.POST.get('name', user.name)
+        home_address = request.POST.get('home_address', user.home_address)
+        phone_number = request.POST.get('phone_number', user.phone_number)
+        password = request.POST.get('password', None)
+        office_hours = request.POST.get('office_hours', user.office_hours)
+        office_location = request.POST.get('office_location', user.office_location)
+        skills = request.POST.get('skills', user.skills)
+
+        # Call the service function to update the user profile
+        update_ta_profile(request, user, name, home_address, phone_number, password, office_hours, office_location, skills)
+
+        messages.success(request, "Your profile has been updated successfully!")
+        return redirect('edit_ta_profile')
+
+    return render(request, 'ta/edit_ta_profile.html', {'user': user})
 
 @login_required
 def view_ta_assignments(request):
