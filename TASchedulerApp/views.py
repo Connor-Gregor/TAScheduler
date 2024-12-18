@@ -257,8 +257,8 @@ def edit_ta_profile(request):
 
 @login_required
 def view_ta_assignments(request):
-    ta_users = MyUser.objects.filter(role='TA').values('name', 'email', 'lab_sections__ta__courses', 'lab_sections_ta')
-    context = {'ta_users': ta_users}
+    lab_sections = LabSection.objects.all()
+    context = {'lab_sections': lab_sections}
     return render(request, 'common/view_ta_assignments.html', context)
 
 @login_required

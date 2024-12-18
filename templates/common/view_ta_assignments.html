@@ -74,12 +74,12 @@
             </tr>
         </thead>
         <tbody>
-            {% for ta in ta_users %}
+            {% for section in lab_sections %}
             <tr>
-                <td>{{ ta.name }}</td>
-                <td>{{ ta.email }}</td>
-                <td>{{ ta.lab_sections__ta__courses }}</td>
-                <td>{{ ta.lab_sections_ta }}</td>
+                <td>{{ section.ta }}</td>
+                <td>{{ section.ta.email }}</td>
+                <td>{{ section.course.name }}</td>
+                <td>{{ section.name }} ({{ section.section }})</td>
             </tr>
             {% endfor %}
         </tbody>
