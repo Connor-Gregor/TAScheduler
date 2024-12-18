@@ -33,7 +33,7 @@ class Login(View):
         if AuthService.login(request, name, password):
             return redirect('dashboard')
         else:
-            return render(request, "common/login.html", {"message": "Invalid username or password"})
+            return render(request, "common/login.html", {"message": "Login failed. Please try again."})
 
 
 class Dashboard(LoginRequiredMixin, View):
