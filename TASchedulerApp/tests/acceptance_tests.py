@@ -483,3 +483,83 @@ class TestViewTAAssignments(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'common/view_ta_assignments.html')
         self.assertEqual(response.context['user'], self.ta)
+=======
+class EditTAProfileViewTest(TestCase):
+    def setUp(self):
+        self.ta_user = MyUser.objects.create_user(
+            name="test_ta",
+            email="ta@example.com",
+            password="tapass",
+            role="TA",
+        )
+        self.admin_user = MyUser.objects.create_user(
+            name="admin",
+            email="admin@example.com",
+            password="adminpass",
+            role="Administrator",
+        )
+        self.client = Client()
+
+    def test_get_edit_ta_profile_page_as_admin(self):
+        self.client.login(username="admin", password="adminpass")
+        response = self.client.get(reverse('edit_ta_profile', args=[self.ta_user.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'admin/edit_ta_profile.html')
+        self.assertEqual(response.context['user'], self.ta_user)
+
+    def test_edit_ta_profile_valid_data(self):
+        self.client.login(username="admin", password="adminpass")
+        response = self.client.post(
+            reverse('edit_ta_profile', args=[self.ta_user.id]),
+            {
+                'newName': 'Updated TA Name',
+                'newContactInfo': 'updated@example.com',
+                'newPassword': 'newtapass123',
+            }
+        )
+        self.ta_user.refresh_from_db()
+        self.assertEqual(self.ta_user.name, 'Updated TA Name')
+        self.assertTrue(self.ta_user.check_password('newtapass123')) 
+        self.assertEqual(self.ta_user.email, 'ta@example.com')  
+        self.assertRedirects(response, reverse('ta_management'))
+
+    def test_edit_ta_profile_invalid_user(self):
+        self.client.login(username="admin", password="adminpass")
+        response = self.client.get(reverse('edit_ta_profile', args=[999]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_edit_ta_profile_unauthorized_access(self):
+        response = self.client.get(reverse('edit_ta_profile', args=[self.ta_user.id]))
+        self.assertEqual(response.status_code, 302)  
+        
+class TAProfileViewTest(TestCase):
+    def setUp(self):
+        self.ta_user = MyUser.objects.create_user(
+            name="test_ta",
+            email="ta@example.com",
+            password="tapass",
+            role="TA",
+        )
+        self.client = Client()
+
+    def test_view_ta_profile(self):
+        self.client.login(username="test_ta", password="tapass")
+        response = self.client.get(reverse('ta_profile'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'ta/ta_profile.html')
+        self.assertEqual(response.context['user'], self.ta_user)
+
+    def test_view_ta_profile_unauthorized_access(self):
+        response = self.client.get(reverse('ta_profile'))
+        self.assertEqual(response.status_code, 302)  
+
+    def test_view_ta_profile_wrong_user(self):
+        admin_user = MyUser.objects.create_user(
+            name="admin",
+            email="admin@example.com",
+            password="adminpass",
+            role="Administrator",
+        )
+        self.client.login(username="admin", password="adminpass")
+        response = self.client.get(reverse('ta_profile'))
+        self.assertEqual(response.status_code, 403)  
