@@ -466,3 +466,20 @@ class DeleteUserViewTest(TestCase):
         # Ensure that the user is redirected to login
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.startswith(reverse('login')))
+
+class TestViewTAAssignments(TestCase):
+    def setUp(self):
+        self.ta = MyUser.objects.create_user(
+            name="ta0",
+            email="ta0@uwm.edu",
+            password="123",
+            role="TA",
+        )
+        self.client = Client()
+        self.client.login(username="ta0", password="123")
+
+    def test_get_view_ta_assignments_page(self):
+        response = self.client.get(reverse('view_ta_assignments'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'common/view_ta_assignments.html')
+        self.assertEqual(response.context['user'], self.ta)
