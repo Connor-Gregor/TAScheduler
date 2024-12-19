@@ -4,6 +4,7 @@ from TASchedulerApp.service.notification_service import NotificationService
 from datetime import datetime, timedelta
 
 
+#This is for the old notification system that wasn't needed, dont run/use
 class NotificationServiceTestCase(TestCase):
     def setUp(self):
         self.user1 = MyUser.objects.create(email="user1@example.com", name="User One")

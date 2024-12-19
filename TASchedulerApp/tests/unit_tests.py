@@ -638,3 +638,19 @@ class CourseServiceAssignTests(TestCase):
         self.course.refresh_from_db()
         self.assertEqual(self.course.instructor.id, self.instructor.id)
         self.assertIn(self.user, self.course.tas.all())
+
+class AccountServiceTests(TestCase):
+
+    def test_create_account_valid_input(self):
+        name = "John Doe"
+        email = "john.doe@example.com"
+        role = "Instructor"
+        password = "SecureP@ssw0rd"
+
+        user = AccountService.create_account(name, email, role, password)
+
+        self.assertIsInstance(user, MyUser)
+        self.assertEqual(user.name, name)
+        self.assertEqual(user.email, email)
+        self.assertEqual(user.role, role)
+        self.assertTrue(user.check_password(password))
